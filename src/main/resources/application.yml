@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/contest
+    username: contest
+    password: contest
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+
+#springdoc:
+#  swagger-ui:
+#    path: /swagger-ui
+#  api-docs:
+#    path: /v3/api-docs
