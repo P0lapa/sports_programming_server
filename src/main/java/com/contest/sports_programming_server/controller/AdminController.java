@@ -3,6 +3,7 @@ package com.contest.sports_programming_server.controller;
 import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.entity.*;
 import com.contest.sports_programming_server.repository.*;
+import com.contest.sports_programming_server.service.AdminService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -22,8 +23,11 @@ import java.util.UUID;
 @Tag(name = "Admin")
 public class AdminController {
 
-    private final ParticipantRepository participantRepo;
+    private final AdminService adminService;
+
     private final TaskRepository taskRepo;
+
+    private final ParticipantRepository participantRepo;
     private final ContestRepository contestRepo;
     private final SolutionRepository solutionRepo;
 
@@ -37,23 +41,8 @@ public class AdminController {
 
     // POST /api/admin/participants — создание с автогенерацией логина/пароля
     @PostMapping("/participants")
-    @Transactional
-    public CreateParticipantResponse createParticipant(@RequestBody @Valid CreateParticipantRequest req) {
-        String login = generateLogin();
-        while (participantRepo.existsByLogin(login)) login = generateLogin();
-
-        String password = generatePassword();
-
-        ParticipantEntity p = ParticipantEntity.builder()
-                .fullName(req.getFullName())
-                .email(req.getContact())
-                .login(login)
-                .email(req.getContact())   // если это почта — ок; если тг — останется как есть
-                .password(password)     // в проде хешируй
-                .build();
-
-        participantRepo.save(p);
-        return new CreateParticipantResponse(p.getId(), login, password);
+    public CreateParticipantResponse createParticipant(@RequestBody CreateParticipantRequest req) {
+        return adminService.createParticipantAndJoinContest(req);
     }
 
     /* ===================== РЕШЕНИЯ ===================== */
@@ -70,24 +59,14 @@ public class AdminController {
 
     // GET /api/admin/tasks — список задач
     @GetMapping("/tasks")
-    public List<TaskEntity> listTasks() {
-        return taskRepo.findAll();
+    public List<TaskListItemDto> listTasks() {
+        return adminService.listTasks();
     }
 
     // POST /api/admin/tasks — создать задачу
     @PostMapping("/tasks")
-    @Transactional
-    public TaskEntity createTask(@RequestBody @Valid CreateTaskRequest req) {
-        ContestEntity contest = contestRepo.findById(req.getContestId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "contestId not found"));
-
-        TaskEntity t = TaskEntity.builder()
-                .name(req.getName())
-                .description(req.getDescription())
-                .contest(contest)
-                .build();
-
-        return taskRepo.save(t);
+    public TaskEntity createTask(@RequestBody CreateTaskRequest req) {
+        return adminService.createTask(req);
     }
 
     /* ===================== ТУРНИРЫ ===================== */
@@ -100,40 +79,30 @@ public class AdminController {
 
     // POST /api/admin/tournaments — создать турнир
     @PostMapping("/tournaments")
-    @Transactional
-    public ContestEntity createTournament(@RequestBody @Valid CreateContestRequest req) {
-        var c = ContestEntity.builder()
-                .name(req.getName())
-                .description(req.getDescription())
-                .startDate(req.getStartDate())
-                .endDate(req.getEndDate())
-                .startTime(req.getStartTime())
-                .endTime(req.getEndTime())
-                .status(req.getStatus())
-                .build();
-        return contestRepo.save(c);
+    public ContestEntity createTournament(@RequestBody CreateContestRequest req) {
+        return adminService.createTournament(req);
     }
 
     /* ===================== УТИЛИТЫ ===================== */
-
-    private static final SecureRandom RNG = new SecureRandom();
-
-    private static String generateLogin() {
-        // u-<8hex>
-        return "u-" + HexFormat.of().withUpperCase().formatHex(randomBytes(4));
-    }
-
-    private static String generatePassword() {
-        // 12 символов [a-zA-Z0-9]
-        final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder sb = new StringBuilder(12);
-        for (int i = 0; i < 12; i++) sb.append(alphabet.charAt(RNG.nextInt(alphabet.length())));
-        return sb.toString();
-    }
-
-    private static byte[] randomBytes(int n) {
-        byte[] b = new byte[n];
-        RNG.nextBytes(b);
-        return b;
-    }
+//
+//    private static final SecureRandom RNG = new SecureRandom();
+//
+//    private static String generateLogin() {
+//        // u-<8hex>
+//        return "u-" + HexFormat.of().withUpperCase().formatHex(randomBytes(4));
+//    }
+//
+//    private static String generatePassword() {
+//        // 12 символов [a-zA-Z0-9]
+//        final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//        StringBuilder sb = new StringBuilder(12);
+//        for (int i = 0; i < 12; i++) sb.append(alphabet.charAt(RNG.nextInt(alphabet.length())));
+//        return sb.toString();
+//    }
+//
+//    private static byte[] randomBytes(int n) {
+//        byte[] b = new byte[n];
+//        RNG.nextBytes(b);
+//        return b;
+//    }
 }

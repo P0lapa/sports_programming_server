@@ -5,11 +5,11 @@ import lombok.Data;
 @Data
 public class CreateContestRequest {
 
-    String name;
-    String description;
-    String startDate;
-    String endDate;
-    String startTime;
-    String endTime;
-    String status;
+    private String name;
+    private String description;
+    private String startDate;
+    private String endDate;
+    private String startTime;
+    private String endTime;
+    private String status;
 }
