@@ -1,8 +1,16 @@
 package com.contest.sports_programming_server.dto;
 
+import lombok.*;
+
 import java.util.UUID;
 
-public record TaskListItemDto(
-        UUID id, String name, String description,
-        UUID contestId, String contestName
-) {}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class TaskListItemDto {
+    private UUID id;
+    private String name;
+    private String description;
+    private UUID contestId;
+    private String contestName;
+}

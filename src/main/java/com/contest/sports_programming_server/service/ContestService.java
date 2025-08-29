@@ -78,7 +78,7 @@ public class ContestService {
                 contest.getId(),
                 contest.getName(),
                 contest.getDescription(),
-                taskMapper.toDtoList(tasks)
+                taskMapper.toShortDtoList(tasks)
         );
     }
 

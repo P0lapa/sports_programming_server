@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class AnswerRequest {
     String login;
-    String language;
+    Enum<Language> language;
     String solution;
 }
