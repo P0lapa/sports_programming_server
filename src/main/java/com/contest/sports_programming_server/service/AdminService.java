@@ -62,48 +62,51 @@ public class AdminService {
     /* ====== участники ====== */
 
     @Transactional
+    public void createParticipant() {
+
+    }
+
+    @Transactional
     public CreateParticipantResponse createParticipantAndJoinContest(CreateParticipantRequest req) {
-        var contest = contestRepo.findById(req.getContestId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "contestId not found"));
 
         String login = generateLogin();
         while (participantRepo.existsByLogin(login)) login = generateLogin();
-        String password = generatePassword();
 
         var p = ParticipantEntity.builder()
                 .fullName(req.getFullName())
                 .email(req.getContact())
                 .login(login)
-                .email(req.getContact())   // если контакт = email — заполнится
-                .password(password)        // хешируй позже
                 .build();
         participantRepo.save(p);
 
-        if (!contestParticipantRepo.existsByContest_IdAndParticipant_Id(contest.getId(), p.getId())) {
-            var link = ContestParticipantEntity.builder()
-                    .contest(contest)
-                    .participant(p)
-                    .build();
-            contestParticipantRepo.save(link);
-        }
+        ContestParticipantDto contestParticipant =  joinContest(req.getContestId() , p.getId());
 
-        return new CreateParticipantResponse(p.getId(), contest.getId(), login, password);
+        return new CreateParticipantResponse(p.getId(), req.getContestId(), contestParticipant.login(), contestParticipant.password());
     }
 
     @Transactional
-    public void joinExistingParticipant(UUID contestId, UUID participantId) {
+    public ContestParticipantDto joinContest(UUID contestId, UUID participantId) {
+
         var contest = contestRepo.findById(contestId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "contestId not found"));
         var participant = participantRepo.findById(participantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "participantId not found"));
 
-        if (contestParticipantRepo.existsByContest_IdAndParticipant_Id(contestId, participantId)) return;
+        ContestParticipantEntity entity =  contestParticipantRepo.findByContestIdAndParticipant_Id(contestId, participantId)
+                .orElseGet(() -> {
+                    String login = generateLogin();
+                    while (participantRepo.existsByLogin(login)) login = generateLogin();
+                    String password = generatePassword();
 
-        var link = ContestParticipantEntity.builder()
-                .contest(contest)
-                .participant(participant)
-                .build();
-        contestParticipantRepo.save(link);
+                    var link = ContestParticipantEntity.builder()
+                            .contest(contest)
+                            .participant(participant)
+                            .login(login)
+                            .password(password)
+                            .build();
+                    return contestParticipantRepo.save(link);
+                });
+        return toDTO(entity);
     }
 
 //    @Transactional(readOnly = true)
@@ -131,5 +134,17 @@ public class AdminService {
         var b = new byte[n];
         RNG.nextBytes(b);
         return b;
+    }
+
+    /* ======= Entity -> DTO ========== */
+
+    private static ContestParticipantDto toDTO(ContestParticipantEntity entity) {
+        return new ContestParticipantDto(
+                entity.getId(),
+                entity.getLogin(),
+                entity.getPassword(),
+                entity.getContest().getId(),
+                entity.getParticipant().getId()
+        );
     }
 }

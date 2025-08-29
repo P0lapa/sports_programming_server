@@ -28,4 +28,13 @@ public class ContestParticipantEntity {
     @JoinColumn(name = "participant_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_cp_participant"))
     private ParticipantEntity participant;
+
+    @Column(length = 64, unique = true)
+    private String login;
+
+    @Column
+    private String password;
+
+    @Column
+    private Integer result;
 }

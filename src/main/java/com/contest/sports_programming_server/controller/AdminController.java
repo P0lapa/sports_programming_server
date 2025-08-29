@@ -30,6 +30,7 @@ public class AdminController {
     private final ParticipantRepository participantRepo;
     private final ContestRepository contestRepo;
     private final SolutionRepository solutionRepo;
+    private final ContestParticipantRepository contestParticipantRepo;
 
     /* ===================== УЧАСТНИКИ ===================== */
 
@@ -83,26 +84,16 @@ public class AdminController {
         return adminService.createTournament(req);
     }
 
-    /* ===================== УТИЛИТЫ ===================== */
-//
-//    private static final SecureRandom RNG = new SecureRandom();
-//
-//    private static String generateLogin() {
-//        // u-<8hex>
-//        return "u-" + HexFormat.of().withUpperCase().formatHex(randomBytes(4));
-//    }
-//
-//    private static String generatePassword() {
-//        // 12 символов [a-zA-Z0-9]
-//        final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-//        StringBuilder sb = new StringBuilder(12);
-//        for (int i = 0; i < 12; i++) sb.append(alphabet.charAt(RNG.nextInt(alphabet.length())));
-//        return sb.toString();
-//    }
-//
-//    private static byte[] randomBytes(int n) {
-//        byte[] b = new byte[n];
-//        RNG.nextBytes(b);
-//        return b;
-//    }
+    // GET /api/admin/tournaments/{tournament_id}/participants
+    @GetMapping("/tournaments/{id}/participants")
+    public List<ContestParticipantDto> listContestParticipants(@PathVariable("id") UUID contestId) {
+        return contestParticipantRepo.findAllByContest_IdAsDto(contestId);
+    }
+
+    // POST /api/admin/tournaments/{tournament_id}/participants
+    @PostMapping("/tournaments/{id}/participants")
+    public ContestParticipantDto createContestParticipant(@PathVariable("id") UUID contestId, @RequestBody UUID participantId) {
+        return adminService.joinContest(contestId, participantId);
+    }
+
 }
