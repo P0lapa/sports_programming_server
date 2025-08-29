@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +26,10 @@ public class ContestEntity {
     private UUID id;
     private String name;
     private String description;
+//    private LocalDate startDate; //возможно поменять String на LocalDate и LocalTime но тогда делаем валидацию на фронте и на беке
+//    private LocalTime startTime;
+//    private LocalDate endDate;
+//    private LocalTime endTime;
     private String startDate;
     private String endDate;
     private String startTime;

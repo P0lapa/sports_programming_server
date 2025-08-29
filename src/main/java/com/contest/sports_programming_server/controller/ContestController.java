@@ -1,12 +1,11 @@
 package com.contest.sports_programming_server.controller;
 
-import com.contest.sports_programming_server.dto.GreetingDto;
-import com.contest.sports_programming_server.dto.TaskDto;
+import com.contest.sports_programming_server.dto.request.LoginRequest;
+import com.contest.sports_programming_server.dto.response.LoginResponse;
 import com.contest.sports_programming_server.service.ContestService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,28 +13,44 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ContestController {
 
-    // Приветственное сообщение
-    @GetMapping("/hello")
-    public GreetingDto hello() {
-//        return new GreetingDto(contestService.greeting());
-        return null;
+    private final ContestService contestService;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
+        LoginResponse response = contestService.findContest(request.getLogin(), request.getPassword());
+        if (response == null) {
+            return ResponseEntity.ok().build(); // HTTP 200 без тела
+        }
+        return ResponseEntity.ok(response); // HTTP 200 с LoginResponse
     }
 
-    // Получение задачи по id
-    @GetMapping("/tasks/{id}")
-    public TaskDto getProblem(@PathVariable Long id) {
-//        return contestService.getProblem(id);
-        return null;
-    }
-
-    @PutMapping("/tasks/{id}")
-    public Object tryTheTask() {
-        return null;
-    }
-
-    @PostMapping("/tasks/{id}")
-    public Object answerTheTask() {
-        return null;
-    }
+//    @GetMapping("/{contest_id}")
+//    public ResponseEntity<GettingContestResponse> getContest(@PathVariable UUID contestId) {
+//
+//    }
+//
+//    // Получение задач
+//    @GetMapping("{contest_id}/tasks")
+//    public TasksResponse getProblem(@PathVariable UUID contest_id) {
+////        return contestService.getAllProblems(id);
+//        return null;
+//    }
+//
+//    // Получение задачи по id
+//    @GetMapping("{contest_id}/tasks/{id}")
+//    public TaskDto getProblem(@PathVariable UUID contest_id, @PathVariable UUID id) {
+////        return contestService.getProblem(contest_id, id);
+//        return null;
+//    }
+//
+//    @PutMapping("/tasks/{id}")
+//    public Object tryTheTask() {
+//        return null;
+//    }
+//
+//    @PostMapping("{contest_id}/tasks/{id}")
+//    public AnswerRequest getProblem(@PathVariable UUID contest_id, @PathVariable UUID id) {
+//        return new AnswerRequest();
+//    }
 
 }
