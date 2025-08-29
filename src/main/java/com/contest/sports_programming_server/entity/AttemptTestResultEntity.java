@@ -25,6 +25,11 @@ public class AttemptTestResultEntity {
             foreignKey = @ForeignKey(name = "fk_test_result_attempt"))
     private AttemptEntity attempt;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "test_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_test_result_test"))
+    private TestEntity test;
+
     private Boolean passed;
     private String reason;
     private Double timeSeconds;
