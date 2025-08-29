@@ -23,6 +23,9 @@ public class TaskEntity {
     private UUID id;
     private String name;
     private String description;
+    private Integer timeLimit;
+    private Integer memoryLimit;
+    private Integer weight;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "contest_id", nullable = false,
