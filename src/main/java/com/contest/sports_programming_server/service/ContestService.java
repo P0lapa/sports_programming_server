@@ -13,8 +13,10 @@ import com.contest.sports_programming_server.repository.ParticipantRepository;
 import com.contest.sports_programming_server.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -38,7 +40,7 @@ public class ContestService {
         Optional<ContestParticipantEntity> optionalEntity = contestParticipantRepository.findByLogin(login);
         if (optionalEntity.isEmpty() || !optionalEntity.get().getPassword().equals(password)) {
             log.warn("Invalid login or password for login: {}", login);
-            return null;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid login or password");
         }
 
         ContestParticipantEntity entity = optionalEntity.get();
