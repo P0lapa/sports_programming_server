@@ -1,5 +1,8 @@
 package com.contest.sports_programming_server.controller;
 
+import com.contest.sports_programming_server.dto.AttemptDto;
+import com.contest.sports_programming_server.dto.TaskCheckRequest;
+import com.contest.sports_programming_server.dto.TaskCheckResponse;
 import com.contest.sports_programming_server.dto.request.LoginRequest;
 import com.contest.sports_programming_server.dto.response.LoginResponse;
 import com.contest.sports_programming_server.service.ContestService;
@@ -7,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/contest")
@@ -49,5 +54,12 @@ public class ContestController {
 //    public AnswerRequest getProblem(@PathVariable UUID contest_id, @PathVariable UUID id) {
 //        return new AnswerRequest();
 //    }
+
+    @PostMapping("/task-check")
+    public ResponseEntity<AttemptDto> taskCheck(@RequestBody TaskCheckRequest request) {
+        var response = contestService.runOpenTests(request);
+        return ResponseEntity.ok(response);
+    }
+
 
 }

@@ -28,9 +28,9 @@ public class AttemptEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "participant_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_attempt_participant"))
-    private ParticipantEntity participant;
+    @JoinColumn(name = "contest_participant_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_attempt_contest_participant"))
+    private ContestParticipantEntity participant;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "task_id", nullable = false,
@@ -57,4 +57,11 @@ public class AttemptEntity {
     @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AttemptTestResultEntity> testResults = new ArrayList<>();
 
+
+    @PrePersist
+    public void prePersist() {
+        if (submissionTime == null) {
+            submissionTime = LocalDateTime.now();
+        }
+    }
 }
