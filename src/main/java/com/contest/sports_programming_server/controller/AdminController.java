@@ -1,6 +1,7 @@
 package com.contest.sports_programming_server.controller;
 
 import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.dto.request.CreateTaskRequest;
 import com.contest.sports_programming_server.entity.*;
 import com.contest.sports_programming_server.repository.*;
 import com.contest.sports_programming_server.service.AdminService;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@Tag(name = "Admin")
+@Tag(name = "For Admin")
 public class AdminController {
 
     private final AdminService adminService;
@@ -59,10 +60,10 @@ public class AdminController {
     /* ===================== ЗАДАЧИ ===================== */
 
     // GET /api/admin/tasks — список задач
-    @GetMapping("/tasks")
-    public List<TaskListItemDto> listTasks() {
-        return adminService.listTasks();
-    }
+//    @GetMapping("/tasks")
+//    public List<TaskListItemDto> listTasks() {
+//        return adminService.listTasks();
+//    }
 
     // POST /api/admin/tasks — создать задачу
     @PostMapping("/tasks")

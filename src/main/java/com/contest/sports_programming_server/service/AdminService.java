@@ -2,6 +2,7 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.dto.request.CreateTaskRequest;
 import com.contest.sports_programming_server.entity.*;
 import com.contest.sports_programming_server.repository.*;
 import jakarta.transaction.Transactional;
@@ -107,11 +108,6 @@ public class AdminService {
                     return contestParticipantRepo.save(link);
                 });
         return toDTO(entity);
-    }
-
-//    @Transactional(readOnly = true)
-    public List<TaskListItemDto> listTasks() {
-        return taskRepo.findAllAsDto();
     }
 
 

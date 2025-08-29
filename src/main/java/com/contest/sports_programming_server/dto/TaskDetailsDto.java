@@ -5,9 +5,12 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class CreateTaskRequest {
+public class TaskDetailsDto {
 
+    private UUID id;
     private String name;
     private String description;
-    private UUID contestId;
+    private Integer timeLimit;
+    private Integer memoryLimit;
+    private Integer weight;
 }
