@@ -19,4 +19,5 @@ public interface TaskRepository extends JpaRepository<TaskEntity, UUID> {
 """)
     List<TaskListItemDto> findAllAsDto();
 
+    List<TaskEntity> findByContest_Id(UUID contestId);
 }
