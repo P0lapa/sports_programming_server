@@ -1,7 +1,6 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.*;
-import com.contest.sports_programming_server.entity.TaskEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,7 +12,6 @@ import java.util.Map;
 
 @Service
 public class TestService {
-
 
     private static final Map<Language, String> LANGUAGE_IMAGES = Map.of(
             Language.JAVA, "openjdk:21-jdk",
@@ -37,21 +35,11 @@ public class TestService {
         return LANGUAGE_EXTENSIONS.get(lang);
     }
 
-    public TaskCheckResponse runOpenTests(TaskCheckRequest request) {
-        return new TaskCheckResponse();
-    }
-
-    public TaskCheckResponse runAllTests(TaskCheckRequest request) {
-
-        // Получить Task с помошью request.task_id
-        //
-        return new TaskCheckResponse();
-    }
-
     private ArrayList<TestResult> runTests(
             String userNumber,
             Language language,
-            TaskEntity task,
+            int memoryLimit,
+            int timeLimit,
             String solution,
             ArrayList<TestCase> tests
     ) {
@@ -60,7 +48,7 @@ public class TestService {
 
         try {
             // 1. Создаем временную директорию для этого запуска
-            Path tmpDir = Files.createTempDirectory("judge_" + userNumber);
+            Path tmpDir = Files.createTempDirectory("judge_" + userNumber + "_");
 
             // 2. Файл с решением
             String ext = getExtension(language);
@@ -82,7 +70,6 @@ public class TestService {
             // 4. Создаём переиспользуемые файлы input/output
             Path inputFile = tmpDir.resolve("test.in");
             Path outputFile = tmpDir.resolve("test.out");
-            Path timeFile = tmpDir.resolve("time.txt");
 
             // 4. Прогон тестов
             for (int i = 0; i < tests.size(); i++) {
@@ -103,23 +90,25 @@ public class TestService {
                     default -> throw new IllegalArgumentException("Unsupported language");
                 }
 
-                String command = String.format("docker run --rm -m %dm --cpus=1.0 -v %s:/app -w /app %s \"timeout %ds sh -c 'time  %s < test.in > test.out' 2> time.txt\"",
-                        task.getMemoryLimit(), tmpDir.toAbsolutePath(), image, task.getTimeLimit(), runCmd);
-
-
                 // 4.3 Запуск
-                ProcessBuilder pb = new ProcessBuilder(command);
+                ProcessBuilder pb = new ProcessBuilder(
+                        "docker", "run", "--rm",
+                        "-m", memoryLimit + "m",
+                        "--cpus=1.0",
+                        "-v", tmpDir.toAbsolutePath() + ":/app",
+                        "-w", "/app",
+                        image,
+                        "sh", "-c", "timeout " + timeLimit + "s " + runCmd + " < test.in > test.out"
+                );
                 pb.directory(tmpDir.toFile());
                 Process p = pb.start();
+                long start = System.nanoTime();
                 int exitCode = p.waitFor();
+                long end = System.nanoTime();
 
                 // 4.4 Читаем вывод и результат
                 String output = Files.exists(outputFile) ? Files.readString(outputFile) : "";
-                double timeUsed = Files.exists(timeFile)
-                        ? Double.parseDouble(Files.readString(timeFile).trim())
-                        : -1.0;
-
-                res.setTimeSeconds(0.0);
+                res.setTimeSeconds((end - start) / 1_000_000_000.0 - 0.5);
 
                 if (exitCode == 124) {
                     res.setPassed(false);
@@ -142,15 +131,7 @@ public class TestService {
             }
 
             // 5. Очистка
-            Files.walk(tmpDir)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(path -> {
-                        try {
-                            Files.deleteIfExists(path);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+            safeDeleteDirectory(tmpDir);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,6 +182,28 @@ public class TestService {
         }
 
         return exitCode;
+    }
+
+    private void safeDeleteDirectory(Path dir) {
+        if (dir == null) return;
+        try {
+            // Убедимся, что все процессы завершились
+            // (если вызывается сразу после run/compile)
+            Thread.sleep(200); // иногда нужно дать ОС закрыть дескрипторы
+
+            try (var paths = Files.walk(dir)) {
+                paths.sorted(Comparator.reverseOrder()) // сначала файлы, потом папки
+                        .forEach(path -> {
+                            try {
+                                Files.deleteIfExists(path);
+                            } catch (IOException e) {
+                                System.err.println("Не удалось удалить: " + path + " (" + e.getMessage() + ")");
+                            }
+                        });
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
