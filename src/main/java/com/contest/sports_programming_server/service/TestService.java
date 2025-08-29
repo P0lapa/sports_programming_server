@@ -1,17 +1,21 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.entity.TestEntity;
+import com.contest.sports_programming_server.repository.TestRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class TestService {
+
+    private final TestRepository repository;
 
     private static final Map<Language, String> LANGUAGE_IMAGES = Map.of(
             Language.JAVA, "openjdk:21-jdk",
@@ -35,16 +39,16 @@ public class TestService {
         return LANGUAGE_EXTENSIONS.get(lang);
     }
 
-    private ArrayList<TestResult> runTests(
+    public List<TestResult> runTests(
             String userNumber,
             Language language,
             int memoryLimit,
             int timeLimit,
             String solution,
-            ArrayList<TestCase> tests
+            List<TestCase> tests
     ) {
 
-        ArrayList<TestResult> results = new ArrayList<>();
+        List<TestResult> results = new ArrayList<>();
 
         try {
             // 1. Создаем временную директорию для этого запуска
@@ -204,6 +208,14 @@ public class TestService {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<TestEntity> getPublicTestsByTask(UUID taskId) {
+        return repository.findAllByTask_IdAndIsPublicTrue(taskId);
+    }
+
+    public List<TestEntity> getTestsByTask(UUID taskId) {
+        return repository.findAllByTask_Id(taskId);
     }
 
 }

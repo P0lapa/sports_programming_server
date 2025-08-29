@@ -1,15 +1,10 @@
 package com.contest.sports_programming_server.controller;
 
-import com.contest.sports_programming_server.dto.AnswerRequest;
+import com.contest.sports_programming_server.dto.AttemptDto;
 import com.contest.sports_programming_server.dto.TaskCheckRequest;
-import com.contest.sports_programming_server.dto.TaskCheckResponse;
 import com.contest.sports_programming_server.dto.TaskDetailsDto;
-import com.contest.sports_programming_server.dto.request.CreateTaskRequest;
 import com.contest.sports_programming_server.dto.request.LoginRequest;
-import com.contest.sports_programming_server.dto.request.UpdateTaskRequest;
 import com.contest.sports_programming_server.dto.response.LoginResponse;
-import com.contest.sports_programming_server.repository.ContestParticipantRepository;
-import com.contest.sports_programming_server.repository.ContestRepository;
 import com.contest.sports_programming_server.service.ContestService;
 import com.contest.sports_programming_server.service.TaskService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,8 +51,11 @@ public class ContestController {
         return ResponseEntity.ok(task);
     }
 
-    @PostMapping("/{contest_id}/tasks/{id}")
-    public ResponseEntity<TaskCheckResponse> trySolution(@PathVariable UUID contest_id, @PathVariable UUID id, @RequestBody @Valid TaskCheckRequest request) {
-        return ResponseEntity.ok(contestService.runOpenTests(request));
+    @PostMapping("/task-check")
+    public ResponseEntity<AttemptDto> taskCheck(@RequestBody TaskCheckRequest request) {
+        var response = contestService.runOpenTests(request);
+        return ResponseEntity.ok(response);
     }
+
+
 }
