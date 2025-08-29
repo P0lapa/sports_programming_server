@@ -2,14 +2,17 @@ package com.contest.sports_programming_server.controller;
 
 import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.dto.request.CreateTaskRequest;
+import com.contest.sports_programming_server.dto.request.UpdateTaskRequest;
 import com.contest.sports_programming_server.entity.*;
 import com.contest.sports_programming_server.repository.*;
 import com.contest.sports_programming_server.service.AdminService;
+import com.contest.sports_programming_server.service.TaskService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,6 +28,7 @@ import java.util.UUID;
 public class AdminController {
 
     private final AdminService adminService;
+    private final TaskService taskService;
 
     private final TaskRepository taskRepo;
 
@@ -59,16 +63,28 @@ public class AdminController {
 
     /* ===================== ЗАДАЧИ ===================== */
 
-    // GET /api/admin/tasks — список задач
-//    @GetMapping("/tasks")
-//    public List<TaskListItemDto> listTasks() {
-//        return adminService.listTasks();
-//    }
+    @GetMapping("/tasks")
+    public List<TaskDetailsDto> listTasks() {
+        return taskService.findTasks();
+    }
 
-    // POST /api/admin/tasks — создать задачу
-    @PostMapping("/tasks")
-    public TaskEntity createTask(@RequestBody CreateTaskRequest req) {
-        return adminService.createTask(req);
+    @GetMapping("/task/{id}")
+    public TaskDetailsDto getTaskById(@PathVariable("id") UUID taskId) {
+        return taskService.findTaskById(taskId);
+    }
+
+    @PostMapping("/task")
+    public ResponseEntity<TaskDetailsDto> createTask(@RequestBody @Valid CreateTaskRequest req) {
+        TaskDetailsDto task = taskService.createTask(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+    }
+
+    @PutMapping("/task/{id}")
+    public ResponseEntity<TaskDetailsDto> updateTask(@PathVariable("id") UUID taskId,
+                                                     @RequestBody @Valid UpdateTaskRequest req) {
+        req.setId(taskId);
+        TaskDetailsDto task = taskService.updateTask(req);
+        return ResponseEntity.ok(task);
     }
 
     /* ===================== ТУРНИРЫ ===================== */
