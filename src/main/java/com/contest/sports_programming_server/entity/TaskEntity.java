@@ -31,4 +31,7 @@ public class TaskEntity {
     @JoinColumn(name = "contest_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_task_contest"))
     private ContestEntity contest;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TestEntity> tests = new ArrayList<>();
 }
