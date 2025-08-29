@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ContestController {
 
-
-
     // Приветственное сообщение
     @GetMapping("/hello")
     public GreetingDto hello() {
@@ -25,7 +23,7 @@ public class ContestController {
 
     // Получение задачи по id
     @GetMapping("/tasks/{id}")
-    public TaskDto getProblem(@PathVariable @NotNull Long id) {
+    public TaskDto getProblem(@PathVariable Long id) {
 //        return contestService.getProblem(id);
         return null;
     }
@@ -40,16 +38,4 @@ public class ContestController {
         return null;
     }
 
-    // Сохранение и проверка решения
-//    @PutMapping("/submissions")
-//    public SubmissionResponse submitAndJudge(@Valid @RequestBody SubmissionRequest request) {
-//        return contestService.submitAndJudge(request);
-//    }
-//
-//    // Финальная отправка на задачу
-//    @PostMapping("/tasks/{id}")
-//    public FinalizeResponse finalizeSubmission(@PathVariable Long id,
-//                                               @Valid @RequestBody FinalizeRequest request) {
-//        return contestService.finalizeSubmission(id, request.submissionId(), request.answer());
-//    }
 }

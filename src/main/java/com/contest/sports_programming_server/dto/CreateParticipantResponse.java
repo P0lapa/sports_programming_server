@@ -9,7 +9,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateParticipantResponse {
 
-    UUID id;
-    String login;
-    String password;
+    private UUID id;
+    private UUID contestId;
+    private String login;
+    private String password;
 }

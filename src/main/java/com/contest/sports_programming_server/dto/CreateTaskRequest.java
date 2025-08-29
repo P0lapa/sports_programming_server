@@ -7,7 +7,7 @@ import java.util.UUID;
 @Data
 public class CreateTaskRequest {
 
-    String name;
-    String description;
-    UUID contestId;
+    private String name;
+    private String description;
+    private UUID contestId;
 }
