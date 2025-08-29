@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,11 +49,11 @@ public class ContestService {
 
         if (hasContestStarted(contest)) {
             log.info("Contest {} has started for login: {}", contest.getId(), login);
-            return getLoginResponse(contest);
+            return getLoginResponse(contest, true);
         }
 
         log.info("Contest {} has not started yet for login: {}", contest.getId(), login);
-        return null;
+        return getLoginResponse(contest, false);
     }
 
     private boolean hasContestStarted(ContestEntity contest) {
@@ -71,8 +72,8 @@ public class ContestService {
 //        return contest.getStatus().equals("STARTED") && contestStart.isBefore(LocalDateTime.now());
     }
 
-    private LoginResponse getLoginResponse(ContestEntity contest) {
-        List<TaskEntity> tasks = taskRepository.findByContest_Id(contest.getId());
+    private LoginResponse getLoginResponse(ContestEntity contest, boolean loadTasks) {
+        List<TaskEntity> tasks = loadTasks ? taskRepository.findByContest_Id(contest.getId()) : Collections.emptyList();
         return new LoginResponse(
                 contest.getId(),
                 contest.getName(),

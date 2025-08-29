@@ -16,11 +16,8 @@ public class ContestController {
     private final ContestService contestService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
         LoginResponse response = contestService.findContest(request.getLogin(), request.getPassword());
-        if (response == null) {
-            return ResponseEntity.ok().build(); // HTTP 200 без тела
-        }
         return ResponseEntity.ok(response); // HTTP 200 с LoginResponse
     }
 
