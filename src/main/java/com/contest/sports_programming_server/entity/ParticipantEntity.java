@@ -14,8 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(
-        name = "participants",
-        indexes = @Index(name = "ux_participant_login", columnList = "login", unique = true)
+        name = "participants"
 )
 public class ParticipantEntity {
 
@@ -23,9 +22,6 @@ public class ParticipantEntity {
     @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false, length = 64, unique = true)
-    private String login;
     private String email;
-    private String password;
     private String fullName;
 }

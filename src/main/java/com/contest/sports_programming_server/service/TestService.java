@@ -171,9 +171,14 @@ public class TestService {
             }
         }
 
-        String command = String.format("docker run --rm -v %s:/app -w /app %s sh -c %s", workDir.toAbsolutePath(), image, compileCmd);
+        ProcessBuilder pb = new ProcessBuilder(
+                "docker", "run", "--rm",
+                "-v", workDir.toAbsolutePath() + ":/app",
+                "-w", "/app",
+                image,
+                "sh", "-c", compileCmd
+        );
 
-        ProcessBuilder pb = new ProcessBuilder(command);
         pb.directory(workDir.toFile());
         pb.redirectErrorStream(true);
         Process p = pb.start();

@@ -70,13 +70,9 @@ public class AdminService {
     @Transactional
     public CreateParticipantResponse createParticipantAndJoinContest(CreateParticipantRequest req) {
 
-        String login = generateLogin();
-        while (participantRepo.existsByLogin(login)) login = generateLogin();
-
         var p = ParticipantEntity.builder()
                 .fullName(req.getFullName())
                 .email(req.getContact())
-                .login(login)
                 .build();
         participantRepo.save(p);
 
@@ -96,7 +92,7 @@ public class AdminService {
         ContestParticipantEntity entity =  contestParticipantRepo.findByContestIdAndParticipant_Id(contestId, participantId)
                 .orElseGet(() -> {
                     String login = generateLogin();
-                    while (participantRepo.existsByLogin(login)) login = generateLogin();
+                    while (contestParticipantRepo.existsByLogin(login)) login = generateLogin();
                     String password = generatePassword();
 
                     var link = ContestParticipantEntity.builder()

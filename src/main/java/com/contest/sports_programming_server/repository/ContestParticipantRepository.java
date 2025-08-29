@@ -27,4 +27,5 @@ public interface ContestParticipantRepository extends JpaRepository<ContestParti
     List<ContestParticipantDto> findAllByContest_IdAsDto(@Param("contestId") UUID contestId);
 
     Optional<ContestParticipantEntity> findByLogin(String login);
+    boolean existsByLogin(String login);
 }

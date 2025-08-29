@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @Table(name = "attempts",
         indexes = {
-                @Index(name = "ix_attempt_participant_task", columnList = "participant_id, task_id")
+                @Index(name = "ix_attempt_participant_task", columnList = "contest_participant_id, task_id")
         })
 public class AttemptEntity {
 

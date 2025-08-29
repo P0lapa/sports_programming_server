@@ -34,7 +34,6 @@ public class AdminController {
 
     private final ParticipantRepository participantRepo;
     private final ContestRepository contestRepo;
-    private final SolutionRepository solutionRepo;
     private final ContestParticipantRepository contestParticipantRepo;
 
     /* ===================== УЧАСТНИКИ ===================== */
@@ -49,16 +48,6 @@ public class AdminController {
     @PostMapping("/participants")
     public CreateParticipantResponse createParticipant(@RequestBody CreateParticipantRequest req) {
         return adminService.createParticipantAndJoinContest(req);
-    }
-
-    /* ===================== РЕШЕНИЯ ===================== */
-
-    // GET /api/admin/solutions?participantId=&taskId=&contestId=
-    @GetMapping("/solutions")
-    public List<SolutionEntity> listSolutions(@RequestParam(required = false) UUID participantId,
-                                              @RequestParam(required = false) UUID taskId,
-                                              @RequestParam(required = false) UUID contestId) {
-        return solutionRepo.findAllFiltered(participantId, taskId, contestId);
     }
 
     /* ===================== ЗАДАЧИ ===================== */
