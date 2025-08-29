@@ -7,5 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TestRepository extends JpaRepository<TestEntity, UUID> {
+
     List<TestEntity> findAllByTask_Id(UUID taskId);
+    List<TestEntity> findAllByTask_IdAndIsPublicTrue(UUID taskId);
 }

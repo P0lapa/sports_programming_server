@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface AttemptRepository extends JpaRepository<AttemptEntity, UUID> {
     List<AttemptEntity> findAllByParticipant_IdAndTask_Id(UUID participantId, UUID taskId);
+    Integer countByParticipant_IdAndTask_Id(UUID participantId, UUID taskId);
 }

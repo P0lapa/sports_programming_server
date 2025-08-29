@@ -6,8 +6,8 @@ import java.util.UUID;
 
 @Data
 public class TaskCheckRequest {
-    String user_number;
-    UUID task_id;
-    Integer language;
+    UUID taskId;
+    UUID participantId;
+    Language language;
     String solution;
 }
