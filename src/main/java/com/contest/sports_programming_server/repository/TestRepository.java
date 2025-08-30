@@ -10,4 +10,6 @@ public interface TestRepository extends JpaRepository<TestEntity, UUID> {
 
     List<TestEntity> findAllByTask_Id(UUID taskId);
     List<TestEntity> findAllByTask_IdAndIsPublicTrue(UUID taskId);
+
+    Integer countByTask_Id(UUID taskId);
 }

@@ -12,7 +12,8 @@ public interface TestMapper {
 
     @Mapping(target = "input", source = "inputData")
     @Mapping(target = "expected", source = "expectedOutput")
-    List<TestCase> toTCList(List<TestEntity> entities);
     TestCase toTC(TestEntity testEntity);
+
+    List<TestCase> toTCList(List<TestEntity> entities);
 
 }

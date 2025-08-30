@@ -37,8 +37,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public TaskDetailsDto findTaskById(UUID id) {
         log.debug("Fetching task with id: {}", id);
-        TaskEntity task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with id: " + id));
+        TaskEntity task = getTaskOrThrow(id);
         return taskMapper.toDto(task);
     }
 
@@ -75,8 +74,7 @@ public class TaskService {
     @Transactional
     public TaskDetailsDto updateTask(UpdateTaskRequest updateTaskRequest) {
         log.debug("Updating task with id: {}", updateTaskRequest.getId());
-        TaskEntity task = taskRepository.findById(updateTaskRequest.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with id: " + updateTaskRequest.getId()));
+        TaskEntity task = getTaskOrThrow(updateTaskRequest.getId());
 
         taskMapper.updateEntityFromDto(updateTaskRequest, task);
         task = taskRepository.save(task);
@@ -92,5 +90,10 @@ public class TaskService {
         }
         taskRepository.deleteById(id);
         log.info("Deleted task with id: {}", id);
+    }
+
+    public TaskEntity getTaskOrThrow(UUID id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
     }
 }

@@ -2,15 +2,18 @@ package com.contest.sports_programming_server.controller;
 
 import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.dto.request.CreateTaskRequest;
+import com.contest.sports_programming_server.dto.request.CreateTestRequest;
 import com.contest.sports_programming_server.dto.request.UpdateTaskRequest;
 import com.contest.sports_programming_server.entity.*;
 import com.contest.sports_programming_server.repository.*;
 import com.contest.sports_programming_server.service.AdminService;
 import com.contest.sports_programming_server.service.TaskService;
+import com.contest.sports_programming_server.service.TestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.webmvc.core.service.RequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +32,14 @@ public class AdminController {
 
     private final AdminService adminService;
     private final TaskService taskService;
+    private final TestService testService;
 
     private final TaskRepository taskRepo;
 
     private final ParticipantRepository participantRepo;
     private final ContestRepository contestRepo;
     private final ContestParticipantRepository contestParticipantRepo;
+    private final RequestService requestBuilder;
 
     /* ===================== УЧАСТНИКИ ===================== */
 
@@ -74,6 +79,36 @@ public class AdminController {
         req.setId(taskId);
         TaskDetailsDto task = taskService.updateTask(req);
         return ResponseEntity.ok(task);
+    }
+
+    /* ===================== ТЕСТЫ ===================== */
+
+    @GetMapping("/tasks/{id}/tests")
+    public List<TestDto> listTests(@PathVariable("id") UUID taskId) {
+        return testService.getTestsByTaskAsDto(taskId);
+    }
+
+    @PostMapping("/tasks/{id}/tests")
+    public ResponseEntity<TestDto> createTest(@PathVariable("id") UUID taskId,
+                                              @RequestBody CreateTestRequest request) {
+        TestDto testDto = testService.createTestAsDto(taskId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(testDto);
+    }
+
+    @PutMapping("/tasks/{id}/tests/{testId}")
+    public ResponseEntity<TestDto> updateTest(@PathVariable("id") UUID taskId,
+                                              @PathVariable("testId") UUID testId,
+                                              @RequestBody TestDto request) {
+        TestDto updated = testService.updateTest(testId, request);
+        return ResponseEntity.ok(updated);
+
+    }
+
+    @DeleteMapping("/tasks/{id}/tests/{testId}")
+    public ResponseEntity<Void> deleteTest(@PathVariable("id") UUID taskId,
+                                           @PathVariable("testId") UUID testId) {
+        testService.deleteTest(testId);
+        return ResponseEntity.noContent().build();
     }
 
     /* ===================== ТУРНИРЫ ===================== */

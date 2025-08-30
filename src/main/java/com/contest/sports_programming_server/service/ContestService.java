@@ -7,6 +7,7 @@ import com.contest.sports_programming_server.dto.response.LoginResponse;
 import com.contest.sports_programming_server.entity.ContestEntity;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.entity.TaskEntity;
+import com.contest.sports_programming_server.mapper.DtoTestMapper;
 import com.contest.sports_programming_server.mapper.TaskMapper;
 import com.contest.sports_programming_server.mapper.TestMapper;
 import com.contest.sports_programming_server.repository.*;

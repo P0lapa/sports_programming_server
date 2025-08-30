@@ -55,6 +55,7 @@ public class AttemptEntity {
     private String solution;
 
     @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<AttemptTestResultEntity> testResults = new ArrayList<>();
 
 
