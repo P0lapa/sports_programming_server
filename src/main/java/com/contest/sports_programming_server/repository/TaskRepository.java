@@ -11,4 +11,7 @@ import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<TaskEntity, UUID> {
     List<TaskEntity> findByContest_Id(UUID contestId);
+    long countByContest_Id(UUID contestId);
+
+    boolean existsByContest_Id(UUID id);
 }

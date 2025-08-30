@@ -14,11 +14,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Builder
 public class LoginResponse {
-//передаётся когда соревнования уже начались
-    private UUID contestId;
-    private String name;
-    private String description;
-    //какие ещё поля о соревнованнии передать
-    private List<TaskDto> tasks;
-
+    private String login;
+    private UUID contestParticipantId;
 }
