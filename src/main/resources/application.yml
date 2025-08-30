@@ -9,6 +9,10 @@ spring:
     hibernate:
       ddl-auto: update
 
+jwt:
+  secret-key: MySuperSecretKey3000
+  validity: 120000
+
 
 #springdoc:
 #  swagger-ui:
