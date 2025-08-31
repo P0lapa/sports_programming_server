@@ -1,12 +1,12 @@
 package com.contest.sports_programming_server.filter;
 
-import com.contest.sports_programming_server.model.ContestParticipantPrincipal;
 import com.contest.sports_programming_server.service.ContestParticipantDetailsService;
 import com.contest.sports_programming_server.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,9 +30,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private final ContestParticipantDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            @NotNull HttpServletRequest request,
+            @NotNull HttpServletResponse response,
+            @NotNull FilterChain filterChain)
             throws ServletException, IOException {
         final String authorizationHeader = request.getHeader(AUTHORIZATION);
         String jwt = null;
@@ -44,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if(Objects.nonNull(subject) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            ContestParticipantPrincipal userDetails = (ContestParticipantPrincipal) userDetailsService.loadUserByUsername(subject);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
             boolean isTokenValidated = jwtService.validateToken(jwt, userDetails);
             if(isTokenValidated) {
                 UsernamePasswordAuthenticationToken userAuthToken =

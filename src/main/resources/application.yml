@@ -14,8 +14,8 @@ jwt:
   validity: 120000
 
 
-#springdoc:
-#  swagger-ui:
-#    path: /swagger-ui
-#  api-docs:
-#    path: /v3/api-docs
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+  api-docs:
+    path: /v3/api-docs

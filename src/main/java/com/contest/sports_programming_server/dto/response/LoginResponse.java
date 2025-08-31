@@ -20,5 +20,5 @@ public class LoginResponse {
     private String description;
     //какие ещё поля о соревнованнии передать
     private List<TaskDto> tasks;
-
+    private String token;
 }

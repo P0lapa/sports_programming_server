@@ -8,6 +8,7 @@ import com.contest.sports_programming_server.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +25,8 @@ public class AdminService {
     private final TaskRepository taskRepo;
     private final ParticipantRepository participantRepo;
     private final ContestParticipantRepository contestParticipantRepo;
+
+    private final PasswordEncoder passwordEncoder;
 
     /* ====== турниры ====== */
 
@@ -88,22 +91,19 @@ public class AdminService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "contestId not found"));
         var participant = participantRepo.findById(participantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "participantId not found"));
+        String login = generateLogin();
+        while (contestParticipantRepo.existsByLogin(login)) login = generateLogin();
+        String password = generatePassword();
 
-        ContestParticipantEntity entity =  contestParticipantRepo.findByContestIdAndParticipant_Id(contestId, participantId)
-                .orElseGet(() -> {
-                    String login = generateLogin();
-                    while (contestParticipantRepo.existsByLogin(login)) login = generateLogin();
-                    String password = generatePassword();
+        var link = ContestParticipantEntity.builder()
+                .contest(contest)
+                .participant(participant)
+                .login(login)
+                .password(passwordEncoder.encode(password))
+                .build();
+        ContestParticipantEntity entity = contestParticipantRepo.save(link);
 
-                    var link = ContestParticipantEntity.builder()
-                            .contest(contest)
-                            .participant(participant)
-                            .login(login)
-                            .password(password)
-                            .build();
-                    return contestParticipantRepo.save(link);
-                });
-        return toDTO(entity);
+        return toDTO(entity, password);
     }
 
 
@@ -130,11 +130,11 @@ public class AdminService {
 
     /* ======= Entity -> DTO ========== */
 
-    private static ContestParticipantDto toDTO(ContestParticipantEntity entity) {
+    private ContestParticipantDto toDTO(ContestParticipantEntity entity, String password) {
         return new ContestParticipantDto(
                 entity.getId(),
                 entity.getLogin(),
-                entity.getPassword(),
+                password,
                 entity.getContest().getId(),
                 entity.getParticipant().getId()
         );

@@ -14,6 +14,12 @@ import com.contest.sports_programming_server.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,25 +44,31 @@ public class ContestService {
     private final TestService testService;
     private final TestMapper testMapper;
     private final AttemptService attemptService;
+    private final JwtService jwtService;
+
+    private final AuthenticationManager authenticationManager;
+    private final ContestParticipantDetailsService contestParticipantDetailsService;
 
     @Transactional(readOnly = true)
     public LoginResponse findContest(String login, String password) {
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info("Authentication success");
         Optional<ContestParticipantEntity> optionalEntity = contestParticipantRepository.findByLogin(login);
-        if (optionalEntity.isEmpty() || !optionalEntity.get().getPassword().equals(password)) {
-            log.warn("Invalid login or password for login: {}", login);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid login or password");
+        if (optionalEntity.isEmpty()) {
+            throw new UsernameNotFoundException(login);
         }
-
         ContestParticipantEntity entity = optionalEntity.get();
         ContestEntity contest = entity.getContest();
 
         if (hasContestStarted(contest)) {
             log.info("Contest {} has started for login: {}", contest.getId(), login);
-            return getLoginResponse(contest, true);
+            return getLoginResponse(entity, true);
         }
 
         log.info("Contest {} has not started yet for login: {}", contest.getId(), login);
-        return getLoginResponse(contest, false);
+        return getLoginResponse(entity, false);
     }
 
     private boolean hasContestStarted(ContestEntity contest) {
@@ -75,13 +87,15 @@ public class ContestService {
 //        return contest.getStatus().equals("STARTED") && contestStart.isBefore(LocalDateTime.now());
     }
 
-    private LoginResponse getLoginResponse(ContestEntity contest, boolean loadTasks) {
+    private LoginResponse getLoginResponse(ContestParticipantEntity contestParticipant, boolean loadTasks) {
+        ContestEntity contest = contestParticipant.getContest();
         List<TaskEntity> tasks = loadTasks ? taskRepository.findByContest_Id(contest.getId()) : Collections.emptyList();
         return new LoginResponse(
                 contest.getId(),
                 contest.getName(),
                 contest.getDescription(),
-                taskMapper.toShortDtoList(tasks)
+                taskMapper.toShortDtoList(tasks),
+                jwtService.generateToken(contestParticipant)
         );
     }
 

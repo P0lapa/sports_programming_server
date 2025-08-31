@@ -2,20 +2,17 @@ package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.config.JwtProperties;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
-import com.contest.sports_programming_server.model.ContestParticipantPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -41,11 +38,14 @@ public class JwtService {
         return extractClaimBody(token, Claims::getExpiration);
     }
 
-    public String generateToken(String subject) {
+    public String generateToken(ContestParticipantEntity contestParticipantEntity) {
+        String username = contestParticipantEntity.getLogin();
 
         Map<String, Object> claims = new HashMap<>();
-        // TODO: добавить contest claim
-        return createToken(claims, subject);
+        claims.put("contest_id", contestParticipantEntity.getContest().getId());
+        claims.put("contest_participant_id", contestParticipantEntity.getId());
+
+        return createToken(claims, username);
     }
 
     public String createToken(Map<String, Object> claims, String subject) {
@@ -67,7 +67,7 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public boolean validateToken(String token, ContestParticipantPrincipal userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = extractUsername(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
