@@ -10,8 +10,8 @@ spring:
       ddl-auto: update
 
 jwt:
-  secret-key: MySuperSecretKey3000
-  validity: 120000
+  secret-key: gdyw7h32e87732h1jbdbchd273dh2bds7dad3h2j1d78
+  validity: 36000000
 
 
 springdoc:

@@ -2,6 +2,7 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.dto.request.CreateContestRequest;
 import com.contest.sports_programming_server.dto.request.CreateTaskRequest;
 import com.contest.sports_programming_server.entity.*;
 import com.contest.sports_programming_server.repository.*;
@@ -30,19 +31,6 @@ public class AdminService {
 
     /* ====== турниры ====== */
 
-    @Transactional
-    public ContestEntity createTournament(CreateContestRequest req) {
-        var entity = ContestEntity.builder()
-                .name(req.getName())
-                .description(req.getDescription())
-                .startDate(req.getStartDate())
-                .endDate(req.getEndDate())
-                .startTime(req.getStartTime())
-                .endTime(req.getEndTime())
-                .status(req.getStatus())
-                .build();
-        return contestRepo.save(entity);
-    }
 
     /* ====== задачи ====== */
 

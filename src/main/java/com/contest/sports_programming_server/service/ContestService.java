@@ -1,35 +1,23 @@
 package com.contest.sports_programming_server.service;
 
-import com.contest.sports_programming_server.dto.AttemptDto;
-import com.contest.sports_programming_server.dto.TaskCheckRequest;
-import com.contest.sports_programming_server.dto.TaskCheckResponse;
-import com.contest.sports_programming_server.dto.response.LoginResponse;
+import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.dto.request.CreateContestRequest;
+import com.contest.sports_programming_server.dto.request.UpdateContestRequest;
 import com.contest.sports_programming_server.entity.ContestEntity;
-import com.contest.sports_programming_server.entity.ContestParticipantEntity;
-import com.contest.sports_programming_server.entity.TaskEntity;
-import com.contest.sports_programming_server.mapper.DtoTestMapper;
+import com.contest.sports_programming_server.mapper.ContestMapper;
 import com.contest.sports_programming_server.mapper.TaskMapper;
 import com.contest.sports_programming_server.mapper.TestMapper;
 import com.contest.sports_programming_server.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,108 +25,56 @@ import java.util.Optional;
 public class ContestService {
 
     private final ContestRepository contestRepository;
-    private final ParticipantRepository participantRepository;
-    private final ContestParticipantRepository contestParticipantRepository;
     private final TaskRepository taskRepository;
-    private final TaskMapper taskMapper;
-    private final TestService testService;
-    private final TestMapper testMapper;
-    private final AttemptService attemptService;
-    private final JwtService jwtService;
 
-    private final AuthenticationManager authenticationManager;
-    private final ContestParticipantDetailsService contestParticipantDetailsService;
+    private final ContestMapper contestMapper;
 
     @Transactional(readOnly = true)
-    public LoginResponse findContest(String login, String password) {
-        Authentication authentication =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.info("Authentication success");
-        Optional<ContestParticipantEntity> optionalEntity = contestParticipantRepository.findByLogin(login);
-        if (optionalEntity.isEmpty()) {
-            throw new UsernameNotFoundException(login);
+    public List<ContestDetailsDto> findAllContests() {
+        log.debug("Fetching all contests");
+        List<ContestEntity> contests = contestRepository.findAllWithTasks();
+        return contestMapper.toDtoList(contests);
+    }
+
+    @Transactional(readOnly = true)
+    public ContestDetailsDto findContestById(UUID id) {
+        log.debug("Fetching contest with id: {}", id);
+        ContestEntity contest = contestRepository.findByIdWithTasks(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contest not found with id: " + id));
+        return contestMapper.toDto(contest);
+    }
+
+    @Transactional
+    public ContestDetailsDto createContest(CreateContestRequest request) {
+        log.debug("Creating contest with name: {}", request.getName());
+        ContestEntity contest = contestMapper.toEntity(request);
+        contest = contestRepository.save(contest);
+        log.info("Created contest with id: {}", contest.getId());
+        return contestMapper.toDto(contest);
+    }
+
+    @Transactional
+    public ContestDetailsDto updateContest(UpdateContestRequest request) {
+        log.debug("Updating contest with id: {}", request.getId());
+        ContestEntity contest = contestRepository.findById(request.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contest not found with id: " + request.getId()));
+        contestMapper.updateEntityFromDto(request, contest);
+        contest = contestRepository.save(contest);
+        log.info("Updated contest with id: {}", contest.getId());
+        Hibernate.initialize(contest.getTasks());
+        return contestMapper.toDto(contest);
+    }
+
+    @Transactional
+    public void deleteContest(UUID id) {
+        log.debug("Deleting contest with id: {}", id);
+        if (!contestRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contest not found with id: " + id);
         }
-        ContestParticipantEntity entity = optionalEntity.get();
-        ContestEntity contest = entity.getContest();
-
-        if (hasContestStarted(contest)) {
-            log.info("Contest {} has started for login: {}", contest.getId(), login);
-            return getLoginResponse(entity, true);
+        if (taskRepository.existsByContest_Id(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot delete contest with existing tasks");
         }
-
-        log.info("Contest {} has not started yet for login: {}", contest.getId(), login);
-        return getLoginResponse(entity, false);
-    }
-
-    private boolean hasContestStarted(ContestEntity contest) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalDate contestStartDate = LocalDate.parse(contest.getStartDate(), dateFormatter);
-        LocalTime contestStartTime = LocalTime.parse(contest.getStartTime(), timeFormatter);
-        LocalDate currentDate = LocalDate.now();
-        LocalTime currentTime = LocalTime.now();
-
-        return contest.getStatus().equals("STARTED") &&
-                (contestStartDate.isBefore(currentDate) ||
-                        (contestStartDate.isEqual(currentDate) && contestStartTime.isBefore(currentTime)));
-//Если таки переделаем формат в сущности:
-//        LocalDateTime contestStart = LocalDateTime.of(contest.getStartDate(), contest.getStartTime());
-//        return contest.getStatus().equals("STARTED") && contestStart.isBefore(LocalDateTime.now());
-    }
-
-    private LoginResponse getLoginResponse(ContestParticipantEntity contestParticipant, boolean loadTasks) {
-        ContestEntity contest = contestParticipant.getContest();
-        List<TaskEntity> tasks = loadTasks ? taskRepository.findByContest_Id(contest.getId()) : Collections.emptyList();
-        return new LoginResponse(
-                contest.getId(),
-                contest.getName(),
-                contest.getDescription(),
-                taskMapper.toShortDtoList(tasks),
-                jwtService.generateToken(contestParticipant)
-        );
-    }
-
-    public AttemptDto runOpenTests(TaskCheckRequest request) {
-
-        var contestParticipant = contestParticipantRepository.findById(request.getParticipantId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
-
-        // TODO: add check for contest status
-
-        var task = taskRepository.findById(request.getTaskId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
-
-        var tests = testService.getPublicTestsByTask(task.getId());
-
-        var testResults = testService.runTests(
-                contestParticipant.getLogin(),
-                request.getLanguage(),
-                task.getMemoryLimit(),
-                task.getTimeLimit(),
-                request.getSolution(),
-                testMapper.toTCList(tests)
-        );
-
-        return attemptService.addAttempt(
-                contestParticipant,
-                task,
-                request.getLanguage(),
-                request.getSolution(),
-                tests,
-                testResults
-        );
-    }
-
-    public TaskCheckResponse runAllTests(TaskCheckRequest request) {
-
-        var contestParticipant = contestParticipantRepository.findById(request.getParticipantId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
-        var task = taskRepository.findById(request.getTaskId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
-
-        var tests = testService.getTestsByTask(task.getId());
-
-        return new TaskCheckResponse();
+        contestRepository.deleteById(id);
+        log.info("Deleted contest with id: {}", id);
     }
 }

@@ -36,19 +36,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests((authorize) -> authorize
-                    .requestMatchers("/api/contest/login", "/api/admin/**").permitAll()
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((authorize) -> authorize
+                    .requestMatchers("/api/**","/api/login", "/api/admin/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .anyRequest().authenticated()
-            )
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationManager(authenticationManager())
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .authenticationManager(authenticationManager())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/swagger-ui/**","/v3/api-docs/**");
     }
 
     @Bean
