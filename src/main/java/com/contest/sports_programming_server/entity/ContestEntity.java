@@ -1,6 +1,6 @@
 package com.contest.sports_programming_server.entity;
 
-import com.contest.sports_programming_server.dto.Status;
+import com.contest.sports_programming_server.dto.ContestStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class ContestEntity {
     private LocalDateTime endDateTime;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private ContestStatus contestStatus;
 
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskEntity> tasks = new ArrayList<>();

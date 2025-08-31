@@ -1,10 +1,7 @@
 package com.contest.sports_programming_server.service;
 
-import com.contest.sports_programming_server.dto.Status;
 import com.contest.sports_programming_server.dto.response.LoginResponse;
-import com.contest.sports_programming_server.entity.ContestEntity;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
-import com.contest.sports_programming_server.entity.TaskEntity;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Service

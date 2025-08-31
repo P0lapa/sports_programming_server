@@ -16,6 +16,6 @@ public class ContestDetailsDto {
     private String description;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
-    private Status status;
+    private ContestStatus contestStatus;
     private Integer numberOfTasks;
 }

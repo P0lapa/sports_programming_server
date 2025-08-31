@@ -1,5 +1,5 @@
 package com.contest.sports_programming_server.dto;
 
-public enum Status {
+public enum ContestStatus {
     NOT_STARTED, STARTED, ENDED;
 }

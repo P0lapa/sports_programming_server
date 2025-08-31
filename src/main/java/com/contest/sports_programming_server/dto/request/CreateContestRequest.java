@@ -1,6 +1,6 @@
 package com.contest.sports_programming_server.dto.request;
 
-import com.contest.sports_programming_server.dto.Status;
+import com.contest.sports_programming_server.dto.ContestStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -22,5 +22,5 @@ public class CreateContestRequest {
     private LocalDateTime endDateTime;
 
     @NotNull(message = "Status is required")
-    private Status status;
+    private ContestStatus contestStatus;
 }
