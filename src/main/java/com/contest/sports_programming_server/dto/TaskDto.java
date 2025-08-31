@@ -6,8 +6,11 @@ import java.util.UUID;
 
 @Data
 public class TaskDto {
-//задачи для отображения на главной странице после логина
+
     private UUID id;
     private String name;
     private Integer weight;
+    private Integer order;
+    private TaskStatus status;
+
 }

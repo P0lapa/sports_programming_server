@@ -1,7 +1,6 @@
 package com.contest.sports_programming_server.dto.request;
 
-import com.contest.sports_programming_server.dto.Status;
-import jakarta.validation.constraints.NotBlank;
+import com.contest.sports_programming_server.dto.ContestStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -17,5 +16,5 @@ public class UpdateContestRequest {
     private String description;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
-    private Status status;
+    private ContestStatus contestStatus;
 }
