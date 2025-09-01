@@ -42,8 +42,6 @@ public class JwtService {
         String username = contestParticipantEntity.getLogin();
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("contest_id", contestParticipantEntity.getContest().getId());
-        claims.put("contest_participant_id", contestParticipantEntity.getId());
 
         return createToken(claims, username);
     }

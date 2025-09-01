@@ -3,6 +3,7 @@ package com.contest.sports_programming_server.controller;
 import com.contest.sports_programming_server.dto.TaskDetailsDto;
 import com.contest.sports_programming_server.dto.request.LoginRequest;
 import com.contest.sports_programming_server.dto.response.LoginResponse;
+import com.contest.sports_programming_server.security.ContestParticipant;
 import com.contest.sports_programming_server.service.TaskService;
 import com.contest.sports_programming_server.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,12 +30,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
         LoginResponse response = userService.login(request.getLogin(), request.getPassword());
-        return ResponseEntity.ok(response); // HTTP 200 с LoginResponse
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/contest/{contest_id}/tasks")
-    public ResponseEntity<List<TaskDetailsDto>> getTasksByContest(@PathVariable("contest_id") UUID contestId) {
-        List<TaskDetailsDto> tasks = taskService.findTasksByContestId(contestId);
+    @GetMapping("/contest/tasks")
+    public ResponseEntity<List<TaskDetailsDto>> getTasksByContest(@AuthenticationPrincipal ContestParticipant principal) {
+        List<TaskDetailsDto> tasks = taskService.findTasksByContestId(principal.getContestId());
         return ResponseEntity.ok(tasks);
     }
 
