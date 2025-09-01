@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://193.124.15.94:5432/mydb
-    username: root
-    password: root
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
@@ -10,8 +10,8 @@ spring:
       ddl-auto: update
 
 jwt:
-  secret-key: gdyw7h32e87732h1jbdbchd273dh2bds7dad3h2j1d78
-  validity: 36000000
+  secret-key: ${JWT_SECRET}
+  validity: ${JWT_VALIDITY}
 
 
 springdoc:
