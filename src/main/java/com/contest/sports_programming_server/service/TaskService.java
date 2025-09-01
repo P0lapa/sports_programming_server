@@ -94,6 +94,6 @@ public class TaskService {
 
     public TaskEntity getTaskOrThrow(UUID id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with id: " + id));
     }
 }

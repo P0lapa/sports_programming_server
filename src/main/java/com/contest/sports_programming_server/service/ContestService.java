@@ -77,4 +77,9 @@ public class ContestService {
         contestRepository.deleteById(id);
         log.info("Deleted contest with id: {}", id);
     }
+
+    public ContestEntity getContestOrThrow(UUID id) {
+        return contestRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contest not found with id: " + id));
+    }
 }

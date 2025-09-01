@@ -7,6 +7,5 @@ import java.util.UUID;
 @Data
 public class CreateParticipantRequest {
     private String fullName;
-    private String contact; // почта или тг
-    private UUID contestId;     // куда добавлять участника
+    private String contact;
 }
