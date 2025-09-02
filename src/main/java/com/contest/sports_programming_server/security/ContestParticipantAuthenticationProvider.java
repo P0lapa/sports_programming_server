@@ -19,11 +19,8 @@ import org.springframework.stereotype.Service;
 @Slf4j(topic = "ContestLogger")
 public class ContestParticipantAuthenticationProvider implements AuthenticationProvider {
 
-    private final ContestParticipantRepository contestParticipantRepository;
     private final ContestParticipantDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-
-    private final SecureProperties secureProperties;
 
     @Override
     public boolean supports(Class<?> authentication) {

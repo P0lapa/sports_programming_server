@@ -7,7 +7,6 @@ import com.contest.sports_programming_server.entity.TaskEntity;
 import com.contest.sports_programming_server.mapper.TestMapper;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import com.contest.sports_programming_server.repository.TaskRepository;
-import com.contest.sports_programming_server.security.ContestParticipant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

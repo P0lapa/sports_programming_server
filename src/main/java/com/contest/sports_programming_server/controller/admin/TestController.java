@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin/tasks/{id}/tests")
+@RequestMapping("/api/admin/tasks/{task_id}/tests")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 @Slf4j
@@ -25,29 +25,29 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping("/")
-    public List<TestDto> listTests(@PathVariable("id") UUID taskId) {
+    public List<TestDto> listTests(@PathVariable("task_id") UUID taskId) {
         return testService.getTestsByTaskAsDto(taskId);
     }
 
     @PostMapping("/")
-    public ResponseEntity<TestDto> createTest(@PathVariable("id") UUID taskId,
+    public ResponseEntity<TestDto> createTest(@PathVariable("task_id") UUID taskId,
                                               @RequestBody CreateTestRequest request) {
         TestDto testDto = testService.createTestAsDto(taskId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(testDto);
     }
 
-    @PutMapping("/{testId}")
-    public ResponseEntity<TestDto> updateTest(@PathVariable("id") UUID taskId,
-                                              @PathVariable("testId") UUID testId,
+    @PutMapping("/{test_id}")
+    public ResponseEntity<TestDto> updateTest(@PathVariable("task_id") UUID taskId,
+                                              @PathVariable("test_id") UUID testId,
                                               @RequestBody TestDto request) {
         TestDto updated = testService.updateTest(testId, request);
         return ResponseEntity.ok(updated);
 
     }
 
-    @DeleteMapping("/{testId}")
-    public ResponseEntity<Void> deleteTest(@PathVariable("id") UUID taskId,
-                                           @PathVariable("testId") UUID testId) {
+    @DeleteMapping("/{test_id}")
+    public ResponseEntity<Void> deleteTest(@PathVariable("task_id") UUID taskId,
+                                           @PathVariable("test_id") UUID testId) {
         testService.deleteTest(testId);
         return ResponseEntity.noContent().build();
     }

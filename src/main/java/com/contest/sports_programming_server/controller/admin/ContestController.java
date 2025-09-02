@@ -33,8 +33,8 @@ public class ContestController {
         return contestService.findAllContests();
     }
 
-    @GetMapping("/{id}")
-    public ContestDetailsDto getTournamentById(@PathVariable("id") UUID contestId) {
+    @GetMapping("/{contest_id}")
+    public ContestDetailsDto getTournamentById(@PathVariable("contest_id") UUID contestId) {
         return contestService.findContestById(contestId);
     }
 
@@ -44,22 +44,22 @@ public class ContestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(contest);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ContestDetailsDto> updateTournament(@PathVariable("id") UUID contestId,
+    @PutMapping("/{contest_id}")
+    public ResponseEntity<ContestDetailsDto> updateTournament(@PathVariable("contest_id") UUID contestId,
                                                               @RequestBody @Valid UpdateContestRequest req) {
         req.setId(contestId);
         ContestDetailsDto contest = contestService.updateContest(req);
         return ResponseEntity.ok(contest);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTournament(@PathVariable("id") UUID contestId) {
+    @DeleteMapping("/{contest_id}")
+    public ResponseEntity<Void> deleteTournament(@PathVariable("contest_id") UUID contestId) {
         contestService.deleteContest(contestId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/finalize")
-    public void finalizeContest(@PathVariable("id") UUID contestId) {
+    @PostMapping("/{contest_id}/finalize")
+    public void finalizeContest(@PathVariable("contest_id") UUID contestId) {
         contestResultsService.finalizeContest(contestId);
     }
 
@@ -68,9 +68,9 @@ public class ContestController {
         return ResponseEntity.ok(contestResultsService.getContestResults(contestId));
     }
 
-    @PostMapping("/{id}/set-status/{status}")
+    @PostMapping("/{contest_id}/set-status/{status}")
     public ResponseEntity<Void> setContestStatus(
-            @PathVariable("id") UUID contestId,
+            @PathVariable("contest_id") UUID contestId,
             @PathVariable("status") ContestStatus status) {
         contestService.setContestStatus(contestId, status);
         return ResponseEntity.noContent().build();

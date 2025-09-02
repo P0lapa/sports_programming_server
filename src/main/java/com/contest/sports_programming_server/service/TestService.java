@@ -13,17 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TestService {
-    //Очень большой сервис, давай разделим 1 будет только заниматься запуском тестов, а другой, например AttemptService
-    // будет вызывать функции отсюда
+
     private final TestRepository repository;
     private final DtoTestMapper dtoMapper;
     private final TaskService taskService;

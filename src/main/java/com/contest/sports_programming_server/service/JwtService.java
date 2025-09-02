@@ -1,7 +1,6 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.config.JwtProperties;
-import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

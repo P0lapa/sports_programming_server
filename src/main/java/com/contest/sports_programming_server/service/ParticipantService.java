@@ -1,6 +1,5 @@
 package com.contest.sports_programming_server.service;
 
-import com.contest.sports_programming_server.dto.NewContestParticipantDto;
 import com.contest.sports_programming_server.dto.CreateParticipantRequest;
 import com.contest.sports_programming_server.dto.ParticipantDto;
 import com.contest.sports_programming_server.entity.ParticipantEntity;

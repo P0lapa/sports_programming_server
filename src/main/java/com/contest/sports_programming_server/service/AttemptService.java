@@ -1,12 +1,9 @@
 package com.contest.sports_programming_server.service;
 
-import com.contest.sports_programming_server.dto.AttemptDto;
 import com.contest.sports_programming_server.dto.Language;
 import com.contest.sports_programming_server.dto.TestResult;
 import com.contest.sports_programming_server.entity.*;
-import com.contest.sports_programming_server.mapper.AttemptMapper;
 import com.contest.sports_programming_server.repository.AttemptRepository;
-import com.contest.sports_programming_server.repository.AttemptTestResultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -5,8 +5,6 @@ import com.contest.sports_programming_server.dto.request.CreateContestRequest;
 import com.contest.sports_programming_server.dto.request.UpdateContestRequest;
 import com.contest.sports_programming_server.entity.ContestEntity;
 import com.contest.sports_programming_server.mapper.ContestMapper;
-import com.contest.sports_programming_server.mapper.TaskMapper;
-import com.contest.sports_programming_server.mapper.TestMapper;
 import com.contest.sports_programming_server.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
