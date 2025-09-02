@@ -6,7 +6,7 @@ import com.contest.sports_programming_server.dto.TaskDto;
 import com.contest.sports_programming_server.security.ContestParticipant;
 import com.contest.sports_programming_server.service.ContestParticipantService;
 import com.contest.sports_programming_server.service.TaskService;
-import com.contest.sports_programming_server.service.TestingService;
+import com.contest.sports_programming_server.service.JudgeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.List;
 public class ContestParticipantApiController {
 
     private final TaskService taskService;
-    private final TestingService testingService;
+    private final JudgeService judgeService;
     private final ContestParticipantService contestParticipantService;
 
     @GetMapping("/tasks")
@@ -37,7 +37,7 @@ public class ContestParticipantApiController {
     public ResponseEntity<AttemptDto> taskCheck(
             @AuthenticationPrincipal ContestParticipant principal,
             @RequestBody TaskCheckRequest request) {
-        var attempt = testingService.runOpenTests(principal, request);
+        var attempt = judgeService.runOpenTests(principal.getId(), request);
         return ResponseEntity.ok(attempt);
     }
 

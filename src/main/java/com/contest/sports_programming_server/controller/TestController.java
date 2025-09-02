@@ -1,11 +1,8 @@
 package com.contest.sports_programming_server.controller;
 
-import com.contest.sports_programming_server.dto.AttemptDto;
-import com.contest.sports_programming_server.dto.TaskCheckRequest;
 import com.contest.sports_programming_server.dto.TestDto;
 import com.contest.sports_programming_server.dto.request.CreateTestRequest;
 import com.contest.sports_programming_server.service.TestService;
-import com.contest.sports_programming_server.service.TestingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
