@@ -4,6 +4,7 @@ import com.contest.sports_programming_server.dto.AttemptDto;
 import com.contest.sports_programming_server.dto.TaskCheckRequest;
 import com.contest.sports_programming_server.dto.TaskDto;
 import com.contest.sports_programming_server.security.ContestParticipant;
+import com.contest.sports_programming_server.service.ContestParticipantService;
 import com.contest.sports_programming_server.service.TaskService;
 import com.contest.sports_programming_server.service.TestingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,10 +25,11 @@ public class ContestParticipantApiController {
 
     private final TaskService taskService;
     private final TestingService testingService;
+    private final ContestParticipantService contestParticipantService;
 
     @GetMapping("/tasks")
     public ResponseEntity<List<TaskDto>> getTasksByContest(@AuthenticationPrincipal ContestParticipant principal) {
-        List<TaskDto> tasks = taskService.getTasksForParticipant(principal.getContestId(), principal.getParticipantId());
+        List<TaskDto> tasks = taskService.getTasksForParticipant(principal.getContestId(), principal.getId());
         return ResponseEntity.ok(tasks);
     }
 
@@ -37,5 +39,11 @@ public class ContestParticipantApiController {
             @RequestBody TaskCheckRequest request) {
         var attempt = testingService.runOpenTests(principal, request);
         return ResponseEntity.ok(attempt);
+    }
+
+    @PostMapping("/finish")
+    public ResponseEntity<Void> finishContest(@AuthenticationPrincipal ContestParticipant principal) {
+        contestParticipantService.finishContestForParticipant(principal.getId());
+        return ResponseEntity.noContent().build();
     }
 }

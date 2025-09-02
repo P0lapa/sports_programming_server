@@ -2,13 +2,8 @@ package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.AttemptDto;
 import com.contest.sports_programming_server.dto.TaskCheckRequest;
-import com.contest.sports_programming_server.dto.TaskCheckResponse;
-import com.contest.sports_programming_server.mapper.ContestMapper;
-import com.contest.sports_programming_server.mapper.TaskMapper;
 import com.contest.sports_programming_server.mapper.TestMapper;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
-import com.contest.sports_programming_server.repository.ContestRepository;
-import com.contest.sports_programming_server.repository.ParticipantRepository;
 import com.contest.sports_programming_server.repository.TaskRepository;
 import com.contest.sports_programming_server.security.ContestParticipant;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +25,7 @@ public class TestingService {
 
     public AttemptDto runOpenTests(ContestParticipant principal, TaskCheckRequest request) {
 
-        var contestParticipant = contestParticipantRepository.findById(principal.getParticipantId())
+        var contestParticipant = contestParticipantRepository.findById(principal.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
 
         // TODO: add check for contest status

@@ -1,6 +1,5 @@
 package com.contest.sports_programming_server.security;
 
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -12,14 +11,14 @@ import java.util.UUID;
 public class ContestParticipant extends User {
 
     private final UUID contestId;
-    private final UUID participantId;
+    private final UUID id;
 
     public ContestParticipant(String username, String password,
                                      Collection<? extends GrantedAuthority> authorities,
-                                     UUID contestId, UUID participantId) {
+                                     UUID contestId, UUID id) {
         super(username, password, authorities);
         this.contestId = contestId;
-        this.participantId = participantId;
+        this.id = id;
     }
 
 }

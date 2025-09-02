@@ -8,11 +8,14 @@ import com.contest.sports_programming_server.mapper.ContestParticipantMapper;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.UUID;
@@ -62,6 +65,14 @@ public class ContestParticipantService {
         entity = repository.save(entity);
 
         return mapper.toDTO(entity, password);
+    }
+
+    @Transactional
+    public void finishContestForParticipant(UUID contestParticipantId) {
+        ContestParticipantEntity entity = repository.findById(contestParticipantId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        entity.setFinishedAt(LocalDateTime.now());
+        repository.save(entity);
     }
 
     private static String generateLogin() {

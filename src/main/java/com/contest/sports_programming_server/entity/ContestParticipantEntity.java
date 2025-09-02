@@ -3,6 +3,7 @@ package com.contest.sports_programming_server.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -37,4 +38,8 @@ public class ContestParticipantEntity {
 
     @Column
     private Integer result;
+
+    @Column(name = "finished_at")
+    private LocalDateTime finishedAt;
+
 }
