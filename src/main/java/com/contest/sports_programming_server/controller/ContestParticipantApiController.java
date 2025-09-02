@@ -1,9 +1,6 @@
 package com.contest.sports_programming_server.controller;
 
-import com.contest.sports_programming_server.dto.AttemptDto;
-import com.contest.sports_programming_server.dto.ContestParticipantShortDto;
-import com.contest.sports_programming_server.dto.TaskCheckRequest;
-import com.contest.sports_programming_server.dto.TaskDto;
+import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.security.ContestParticipant;
 import com.contest.sports_programming_server.service.ContestParticipantApiService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/contest")
@@ -30,6 +28,14 @@ public class ContestParticipantApiController {
     public ResponseEntity<List<TaskDto>> getTasks(@AuthenticationPrincipal ContestParticipant principal) {
         var tasks = contestParticipantApiService.getTasks(principal);
         return ResponseEntity.ok(tasks);
+    }
+
+    @PreAuthorize("@contestSecurity.hasActiveContest(authentication.name)")
+    @GetMapping("/tasks/{task_id}")
+    public ResponseEntity<TaskWithAttemptsDto> getTaskWithAttempts(
+            @AuthenticationPrincipal ContestParticipant principal,
+            @PathVariable("task_id") UUID taskId) {
+        return ResponseEntity.ok(contestParticipantApiService.getTaskWithAttempts(principal, taskId));
     }
 
     @PreAuthorize("@contestSecurity.hasActiveContest(authentication.name)")

@@ -28,7 +28,6 @@ public class ContestParticipantDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        log.debug("Username {} admin-username {}", username, secureProperties.getUsername());
         if(username.equals(secureProperties.getUsername())){
             return User.builder()
                     .username(username)

@@ -71,4 +71,8 @@ public class AttemptService {
         return attemptRepository.countByParticipant_IdAndTask_Id(participantId, taskId) + 1;
     }
 
+    public List<AttemptEntity> getAttempts(UUID participantId, UUID taskId) {
+        return attemptRepository.findAllByParticipant_IdAndTask_Id(participantId, taskId);
+    }
+
 }
