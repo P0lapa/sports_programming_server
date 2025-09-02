@@ -72,12 +72,8 @@ public class TestService {
 
             // 3. Компиляция (если нужно)
             if (language != Language.PYTHON) {
-                int compileCode = compileSolution(language, solutionFile, tmpDir);
+                int compileCode = compileSolution(language, solutionFile, tmpDir, results);
                 if (compileCode != 0) {
-                    TestResult compileError = new TestResult();
-                    compileError.setPassed(false);
-                    compileError.setReason("CE"); // Compilation Error
-                    results.add(compileError);
                     return results;
                 }
             }
@@ -90,8 +86,6 @@ public class TestService {
             for (int i = 0; i < tests.size(); i++) {
                 TestCase tc = tests.get(i);
                 TestResult res = new TestResult();
-                log.info(tc.getInput());
-                log.info(tc.getExpected());
 
                 // 4.1 Записываем input
                 Files.writeString(inputFile, tc.getInput());
@@ -162,26 +156,16 @@ public class TestService {
     }
 
 
-    private int compileSolution(Language lang, Path sourceFile, Path workDir) throws IOException, InterruptedException {
+    private int compileSolution(Language lang, Path sourceFile, Path workDir, List<TestResult> results)
+            throws IOException, InterruptedException {
         String image = getImage(lang);
         String compileCmd;
 
         switch (lang) {
-            case CPP -> {
-                // g++ solution.cpp -o solution
-                compileCmd = "g++ " + sourceFile.getFileName().toString() + " -o solution";
-            }
-            case C -> {
-                // gcc solution.c -o solution
-                compileCmd = "gcc " + sourceFile.getFileName().toString() + " -o solution";
-            }
-            case JAVA -> {
-                // javac Solution.java
-                compileCmd = "javac " + sourceFile.getFileName().toString();
-            }
-            default -> {
-                return 0; // Для Python компиляция не нужна
-            }
+            case CPP -> compileCmd = "g++ " + sourceFile.getFileName().toString() + " -o solution";
+            case C -> compileCmd = "gcc " + sourceFile.getFileName().toString() + " -o solution";
+            case JAVA -> compileCmd = "javac " + sourceFile.getFileName().toString();
+            default -> { return 0; }
         }
 
         ProcessBuilder pb = new ProcessBuilder(
@@ -200,7 +184,10 @@ public class TestService {
         int exitCode = p.waitFor();
 
         if (exitCode != 0) {
-            System.err.println("Compilation failed:\n" + output);
+            TestResult compileError = new TestResult();
+            compileError.setPassed(false);
+            compileError.setReason("CE: " + output.trim());
+            results.add(compileError);
         }
 
         return exitCode;

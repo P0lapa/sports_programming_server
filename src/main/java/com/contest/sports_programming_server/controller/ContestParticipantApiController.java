@@ -2,7 +2,7 @@ package com.contest.sports_programming_server.controller;
 
 import com.contest.sports_programming_server.dto.AttemptDto;
 import com.contest.sports_programming_server.dto.TaskCheckRequest;
-import com.contest.sports_programming_server.dto.TaskDetailsDto;
+import com.contest.sports_programming_server.dto.TaskDto;
 import com.contest.sports_programming_server.security.ContestParticipant;
 import com.contest.sports_programming_server.service.TaskService;
 import com.contest.sports_programming_server.service.TestingService;
@@ -26,14 +26,16 @@ public class ContestParticipantApiController {
     private final TestingService testingService;
 
     @GetMapping("/tasks")
-    public ResponseEntity<List<TaskDetailsDto>> getTasksByContest(@AuthenticationPrincipal ContestParticipant principal) {
-        List<TaskDetailsDto> tasks = taskService.findTasksByContestId(principal.getContestId());
+    public ResponseEntity<List<TaskDto>> getTasksByContest(@AuthenticationPrincipal ContestParticipant principal) {
+        List<TaskDto> tasks = taskService.getTasksForParticipant(principal.getContestId(), principal.getParticipantId());
         return ResponseEntity.ok(tasks);
     }
 
     @PostMapping("/task-check")
-    public ResponseEntity<AttemptDto> taskCheck(@RequestBody TaskCheckRequest request) {
-        var attempt = testingService.runOpenTests(request);
+    public ResponseEntity<AttemptDto> taskCheck(
+            @AuthenticationPrincipal ContestParticipant principal,
+            @RequestBody TaskCheckRequest request) {
+        var attempt = testingService.runOpenTests(principal, request);
         return ResponseEntity.ok(attempt);
     }
 }

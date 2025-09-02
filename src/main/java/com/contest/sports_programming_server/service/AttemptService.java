@@ -41,7 +41,9 @@ public class AttemptService {
                 .solution(solution)
                 .build();
 
-        for(int i = 0; i < results.size(); i++) {
+        int loopSize = Integer.min(results.size(), tests.size());
+
+        for(int i = 0; i < loopSize; i++) {
 
             TestResult testResult = results.get(i);
             TestEntity testEntity = tests.get(i);

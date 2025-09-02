@@ -1,11 +1,14 @@
 package com.contest.sports_programming_server.service;
 
+import com.contest.sports_programming_server.dto.TaskDto;
 import com.contest.sports_programming_server.dto.request.CreateTaskRequest;
 import com.contest.sports_programming_server.dto.TaskDetailsDto;
 import com.contest.sports_programming_server.dto.request.UpdateTaskRequest;
+import com.contest.sports_programming_server.entity.AttemptEntity;
 import com.contest.sports_programming_server.entity.ContestEntity;
 import com.contest.sports_programming_server.entity.TaskEntity;
 import com.contest.sports_programming_server.mapper.TaskMapper;
+import com.contest.sports_programming_server.repository.AttemptRepository;
 import com.contest.sports_programming_server.repository.ContestRepository;
 import com.contest.sports_programming_server.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +31,8 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final ContestRepository contestRepository;
+    private final AttemptRepository attemptRepository;
+
     private final TaskMapper taskMapper;
 
     @Transactional(readOnly = true)
@@ -49,6 +57,17 @@ public class TaskService {
         }
         List<TaskEntity> tasks = taskRepository.findByContest_Id(contestId);
         return taskMapper.toDtoList(tasks);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskDto> getTasksForParticipant(UUID contestId, UUID participantId) {
+
+        List<TaskDto> tasks = taskRepository.findTaskDtosForParticipant(contestId, participantId);
+
+        AtomicInteger counter = new AtomicInteger(1);
+        tasks.forEach(t -> t.setOrder(counter.getAndIncrement()));
+
+        return tasks;
     }
 
     @Transactional

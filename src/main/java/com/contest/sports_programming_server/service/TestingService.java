@@ -10,6 +10,7 @@ import com.contest.sports_programming_server.repository.ContestParticipantReposi
 import com.contest.sports_programming_server.repository.ContestRepository;
 import com.contest.sports_programming_server.repository.ParticipantRepository;
 import com.contest.sports_programming_server.repository.TaskRepository;
+import com.contest.sports_programming_server.security.ContestParticipant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,9 @@ public class TestingService {
     private final TestMapper testMapper;
     private final AttemptService attemptService;
 
-    public AttemptDto runOpenTests(TaskCheckRequest request) {
+    public AttemptDto runOpenTests(ContestParticipant principal, TaskCheckRequest request) {
 
-        var contestParticipant = contestParticipantRepository.findById(request.getParticipantId())
+        var contestParticipant = contestParticipantRepository.findById(principal.getParticipantId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
 
         // TODO: add check for contest status
@@ -58,15 +59,15 @@ public class TestingService {
         );
     }
 
-    public TaskCheckResponse runAllTests(TaskCheckRequest request) {
-
-        var contestParticipant = contestParticipantRepository.findById(request.getParticipantId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
-        var task = taskRepository.findById(request.getTaskId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
-
-        var tests = testService.getTestsByTask(task.getId());
-
-        return new TaskCheckResponse();
-    }
+//    public TaskCheckResponse runAllTests(TaskCheckRequest request) {
+//
+//        var contestParticipant = contestParticipantRepository.findById(request.getParticipantId())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
+//        var task = taskRepository.findById(request.getTaskId())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
+//
+//        var tests = testService.getTestsByTask(task.getId());
+//
+//        return new TaskCheckResponse();
+//    }
 }
