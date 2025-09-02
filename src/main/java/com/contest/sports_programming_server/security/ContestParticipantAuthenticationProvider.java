@@ -1,5 +1,4 @@
 package com.contest.sports_programming_server.security;
-
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import com.contest.sports_programming_server.service.ContestParticipantDetailsService;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j(topic = "ContestLogger")
 public class ContestParticipantAuthenticationProvider implements AuthenticationProvider {
 
     private final ContestParticipantRepository contestParticipantRepository;
@@ -33,17 +32,17 @@ public class ContestParticipantAuthenticationProvider implements AuthenticationP
 
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        ContestParticipantEntity entity = contestParticipantRepository.findByLogin(username)
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
-        if(passwordEncoder.matches(password, entity.getPassword())) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            return UsernamePasswordAuthenticationToken.authenticated(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
-        } else {
-            throw new BadCredentialsException("Invalid username or password");
+        ContestParticipantEntity participant = contestParticipantRepository.findByLogin(username)
+                .orElseThrow(() -> new BadCredentialsException("Invalid username"));
+        if(!passwordEncoder.matches(password, participant.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
         }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        return UsernamePasswordAuthenticationToken.authenticated(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
     }
 }

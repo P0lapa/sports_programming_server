@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,14 @@ public class ContestParticipantApiController {
 
     private final ContestParticipantApiService contestParticipantApiService;
 
+    @PreAuthorize("@contestSecurity.hasActiveContest(authentication.name)")
     @GetMapping("/tasks")
     public ResponseEntity<List<TaskDto>> getTasks(@AuthenticationPrincipal ContestParticipant principal) {
         var tasks = contestParticipantApiService.getTasks(principal);
         return ResponseEntity.ok(tasks);
     }
 
+    @PreAuthorize("@contestSecurity.hasActiveContest(authentication.name)")
     @PostMapping("/task-check")
     public ResponseEntity<AttemptDto> taskCheck(
             @AuthenticationPrincipal ContestParticipant principal,
@@ -37,6 +40,7 @@ public class ContestParticipantApiController {
         return ResponseEntity.ok(attempt);
     }
 
+    @PreAuthorize("@contestSecurity.hasActiveContest(authentication.name)")
     @PostMapping("/finish")
     public ResponseEntity<Void> finishContest(@AuthenticationPrincipal ContestParticipant principal) {
         contestParticipantApiService.finishContest(principal);

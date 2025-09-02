@@ -21,4 +21,7 @@ public interface ContestParticipantRepository extends JpaRepository<ContestParti
     Optional<ContestParticipantEntity> findByLogin(String login);
 
     boolean existsByLogin(String login);
+
+    @Query("SELECT p FROM ContestParticipantEntity p LEFT JOIN FETCH p.contest WHERE p.login = :login")
+    Optional<ContestParticipantEntity> findByLoginWithContest(@Param("login") String login);
 }
