@@ -33,9 +33,11 @@ public class ContestEntity {
     private ContestStatus contestStatus;
 
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<TaskEntity> tasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<ContestParticipantEntity> participants = new ArrayList<>();
 
     @AssertTrue(message = "startDateTime must be before endDateTime")

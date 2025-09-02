@@ -27,5 +27,6 @@ public class ParticipantEntity {
     private String fullName;
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<ContestParticipantEntity> participants = new ArrayList<>();
 }

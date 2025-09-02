@@ -33,5 +33,6 @@ public class TaskEntity {
     private ContestEntity contest;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<TestEntity> tests = new ArrayList<>();
 }
