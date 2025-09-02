@@ -1,6 +1,7 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.ContestParticipantDto;
+import com.contest.sports_programming_server.dto.CreateParticipantRequest;
 import com.contest.sports_programming_server.dto.NewContestParticipantDto;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.mapper.ContestParticipantMapper;
@@ -36,6 +37,12 @@ public class ContestParticipantService {
 
     public List<ContestParticipantDto> findByContestIdAsDto(UUID contestId) {
         return mapper.toDTOList(findByContestId(contestId));
+    }
+
+    @Transactional
+    public NewContestParticipantDto createParticipantAndJoinContest(UUID contestId, CreateParticipantRequest request) {
+        var participant = participantService.create(request);
+        return createContestParticipant(contestId, participant.id());
     }
 
     @Transactional
