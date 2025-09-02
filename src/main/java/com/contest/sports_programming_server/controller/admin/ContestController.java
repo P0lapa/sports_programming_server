@@ -63,6 +63,11 @@ public class ContestController {
         contestResultsService.finalizeContest(contestId);
     }
 
+    @GetMapping("/{contest_id}/results")
+    public ResponseEntity<List<ContestResultItemDto>> getContestResults(@PathVariable("contest_id") UUID contestId) {
+        return ResponseEntity.ok(contestResultsService.getContestResults(contestId));
+    }
+
     @PostMapping("/{id}/set-status/{status}")
     public ResponseEntity<Void> setContestStatus(
             @PathVariable("id") UUID contestId,

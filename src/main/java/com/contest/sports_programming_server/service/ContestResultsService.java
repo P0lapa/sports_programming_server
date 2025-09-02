@@ -1,5 +1,6 @@
 package com.contest.sports_programming_server.service;
 
+import com.contest.sports_programming_server.dto.ContestResultItemDto;
 import com.contest.sports_programming_server.dto.Solution;
 import com.contest.sports_programming_server.entity.*;
 import com.contest.sports_programming_server.repository.AttemptRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +25,7 @@ public class ContestResultsService {
     private final AttemptRepository attemptRepository;
     private final ContestParticipantTaskResultRepository contestParticipantTaskResultRepository;
     private final JudgeService judgeService;
+    private final ContestParticipantRepository contestParticipantRepository;
 
     @Transactional
     public void finalizeContest(UUID contestId) {
@@ -116,4 +119,17 @@ public class ContestResultsService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<ContestResultItemDto> getContestResults(UUID contestId) {
+        List<ContestParticipantEntity> participants =
+                contestParticipantRepository.findByContestIdWithParticipantOrderByResultDesc(contestId);
+
+        AtomicInteger placeCounter = new AtomicInteger(1);
+
+        return participants.stream()
+                .sorted(Comparator.comparing(ContestParticipantEntity::getResult,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .map(p -> new ContestResultItemDto(placeCounter.getAndIncrement(), p.getParticipant().getFullName(), p.getResultAsDouble()))
+                .toList();
+    }
 }

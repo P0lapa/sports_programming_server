@@ -24,4 +24,12 @@ public interface ContestParticipantRepository extends JpaRepository<ContestParti
 
     @Query("SELECT p FROM ContestParticipantEntity p LEFT JOIN FETCH p.contest WHERE p.login = :login")
     Optional<ContestParticipantEntity> findByLoginWithContest(@Param("login") String login);
+
+    @Query("""
+    SELECT cp FROM ContestParticipantEntity cp
+    JOIN FETCH cp.participant p
+    WHERE cp.contest.id = :contestId
+    ORDER BY cp.result DESC
+""")
+    List<ContestParticipantEntity> findByContestIdWithParticipantOrderByResultDesc(@Param("contestId") UUID contestId);
 }

@@ -48,4 +48,8 @@ public class ContestParticipantEntity {
         this.result = BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP);
     }
 
+    public double getResultAsDouble() {
+        return result != null ? result.doubleValue() : 0.0;
+    }
+
 }
