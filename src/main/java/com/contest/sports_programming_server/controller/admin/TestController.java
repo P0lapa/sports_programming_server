@@ -1,4 +1,4 @@
-package com.contest.sports_programming_server.controller;
+package com.contest.sports_programming_server.controller.admin;
 
 import com.contest.sports_programming_server.dto.TestDto;
 import com.contest.sports_programming_server.dto.request.CreateTestRequest;
