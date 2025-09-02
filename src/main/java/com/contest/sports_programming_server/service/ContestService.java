@@ -21,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "ContestLogger")
 public class ContestService {
 
     private final ContestRepository contestRepository;
@@ -72,6 +73,13 @@ public class ContestService {
     public ContestEntity getContestOrThrow(UUID id) {
         return contestRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contest not found with id: " + id));
+    }
+
+    public void setContestStatus(UUID id, ContestStatus status) {
+        var contest = getContestOrThrow(id);
+        contest.setContestStatus(status);
+        contestRepository.save(contest);
+        log.debug("Contest {} status updated to {}", contest.getId(), contest.getContestStatus());
     }
 
 }

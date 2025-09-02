@@ -1,9 +1,6 @@
 package com.contest.sports_programming_server.controller;
 
-import com.contest.sports_programming_server.dto.AttemptDto;
-import com.contest.sports_programming_server.dto.ContestDetailsDto;
-import com.contest.sports_programming_server.dto.TaskCheckRequest;
-import com.contest.sports_programming_server.dto.TaskDetailsDto;
+import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.dto.request.CreateContestRequest;
 import com.contest.sports_programming_server.dto.request.LoginRequest;
 import com.contest.sports_programming_server.dto.request.UpdateContestRequest;
@@ -70,5 +67,13 @@ public class ContestController {
     @PostMapping("/{id}/finalize")
     public void finalizeContest(@PathVariable("id") UUID contestId) {
         contestResultsService.finalizeContest(contestId);
+    }
+
+    @PostMapping("/{id}/set-status/{status}")
+    public ResponseEntity<Void> setContestStatus(
+            @PathVariable("id") UUID contestId,
+            @PathVariable("status") ContestStatus status) {
+        contestService.setContestStatus(contestId, status);
+        return ResponseEntity.noContent().build();
     }
 }
