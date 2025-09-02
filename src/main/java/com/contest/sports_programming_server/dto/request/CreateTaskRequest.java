@@ -25,6 +25,4 @@ public class CreateTaskRequest {
     @Min(value = 1, message = "Weight must be positive")
     private Integer weight;
 
-    @NotNull(message = "Contest ID is required")
-    private UUID contestId;
 }
