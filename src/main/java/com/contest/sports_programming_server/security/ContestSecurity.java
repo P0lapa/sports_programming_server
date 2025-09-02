@@ -24,10 +24,12 @@ public class ContestSecurity {
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
         if (participant.getFinishedAt() != null) {
+            log.warn("Participant {} tries to join contest after finishing", participant.getId());
             throw new ParticipationFinishedException();
         }
 
          if (participant.getContest().getContestStatus() != ContestStatus.STARTED) {
+             log.warn("Participant {} tries to join contest before starting or after finishing", participant.getId());
             throw new ContestNotRunningException();
         }
 
