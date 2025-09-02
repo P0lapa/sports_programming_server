@@ -3,6 +3,8 @@ package com.contest.sports_programming_server.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -36,10 +38,14 @@ public class ContestParticipantEntity {
     @Column
     private String password;
 
-    @Column
-    private Integer result;
+    @Column(precision = 5, scale = 1)
+    private BigDecimal result;
 
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
+
+    public void setResult(double value) {
+        this.result = BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP);
+    }
 
 }

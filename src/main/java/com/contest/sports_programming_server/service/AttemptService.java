@@ -9,6 +9,7 @@ import com.contest.sports_programming_server.repository.AttemptRepository;
 import com.contest.sports_programming_server.repository.AttemptTestResultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,10 +19,9 @@ import java.util.UUID;
 public class AttemptService {
 
     private final AttemptRepository attemptRepository;
-    private final AttemptTestResultRepository attemptTestResultRepository;
-    private final AttemptMapper attemptMapper;
 
-    public AttemptDto addAttempt(
+    @Transactional
+    public AttemptEntity addAttempt(
             ContestParticipantEntity participant,
             TaskEntity task,
             Language language,
@@ -59,9 +59,7 @@ public class AttemptService {
             attempt.getTestResults().add(result);
         }
 
-        attemptRepository.save(attempt);
-
-        return attemptMapper.toDto(attempt);
+        return attemptRepository.save(attempt);
 
     }
 

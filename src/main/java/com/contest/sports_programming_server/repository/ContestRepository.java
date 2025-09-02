@@ -16,4 +16,5 @@ public interface ContestRepository extends JpaRepository<ContestEntity, UUID> {
 
     @Query("SELECT c FROM ContestEntity c LEFT JOIN FETCH c.tasks WHERE c.id = :id")
     Optional<ContestEntity> findByIdWithTasks(@Param("id") UUID id);
+
 }

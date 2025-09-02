@@ -7,6 +7,7 @@ import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.mapper.ContestParticipantMapper;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "ContestLogger")
 public class ContestParticipantService {
 
     private final ContestParticipantRepository repository;
@@ -71,8 +73,14 @@ public class ContestParticipantService {
     public void finishContestForParticipant(UUID contestParticipantId) {
         ContestParticipantEntity entity = repository.findById(contestParticipantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        finishContestForParticipant(entity);
+    }
+
+    @Transactional
+    public void finishContestForParticipant(ContestParticipantEntity entity) {
         entity.setFinishedAt(LocalDateTime.now());
         repository.save(entity);
+        log.info("Finished contest for participant {} login {}", entity.getId(), entity.getLogin());
     }
 
     private static String generateLogin() {

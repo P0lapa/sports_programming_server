@@ -58,11 +58,16 @@ public class AttemptEntity {
     @Builder.Default
     private List<AttemptTestResultEntity> testResults = new ArrayList<>();
 
-
     @PrePersist
     public void prePersist() {
         if (submissionTime == null) {
             submissionTime = LocalDateTime.now();
         }
+    }
+
+    public int getPassedTestsCount() {
+        return testResults == null ? 0 : (int) testResults.stream()
+                .filter(AttemptTestResultEntity::getPassed)
+                .count();
     }
 }

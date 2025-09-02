@@ -9,6 +9,7 @@ import com.contest.sports_programming_server.dto.request.LoginRequest;
 import com.contest.sports_programming_server.dto.request.UpdateContestRequest;
 import com.contest.sports_programming_server.dto.response.LoginResponse;
 import com.contest.sports_programming_server.entity.ContestEntity;
+import com.contest.sports_programming_server.service.ContestResultsService;
 import com.contest.sports_programming_server.service.ContestService;
 import com.contest.sports_programming_server.service.TaskService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,33 +26,34 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/contests")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Contest")
 public class ContestController {
 
     private final ContestService contestService;
+    private final ContestResultsService contestResultsService;
 
     /*===========================ТУРНИРЫ==========================*/
 
-    @GetMapping("/contests")
+    @GetMapping("/")
     public List<ContestDetailsDto> listTournaments() {
         return contestService.findAllContests();
     }
 
-    @GetMapping("/contests/{id}")
+    @GetMapping("/{id}")
     public ContestDetailsDto getTournamentById(@PathVariable("id") UUID contestId) {
         return contestService.findContestById(contestId);
     }
 
-    @PostMapping("/contests")
+    @PostMapping("/")
     public ResponseEntity<ContestDetailsDto> createTournament(@RequestBody @Valid CreateContestRequest req) {
         ContestDetailsDto contest = contestService.createContest(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(contest);
     }
 
-    @PutMapping("/contests/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ContestDetailsDto> updateTournament(@PathVariable("id") UUID contestId,
                                                               @RequestBody @Valid UpdateContestRequest req) {
         req.setId(contestId);
@@ -59,9 +61,14 @@ public class ContestController {
         return ResponseEntity.ok(contest);
     }
 
-    @DeleteMapping("/contests/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTournament(@PathVariable("id") UUID contestId) {
         contestService.deleteContest(contestId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/finalize")
+    public void finalizeContest(@PathVariable("id") UUID contestId) {
+        contestResultsService.finalizeContest(contestId);
     }
 }

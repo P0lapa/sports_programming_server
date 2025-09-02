@@ -1,6 +1,9 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.entity.AttemptEntity;
+import com.contest.sports_programming_server.entity.ContestParticipantEntity;
+import com.contest.sports_programming_server.entity.TaskEntity;
 import com.contest.sports_programming_server.mapper.TestMapper;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import com.contest.sports_programming_server.repository.TaskRepository;
@@ -18,7 +21,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j(topic = "ContestLogger")
 public class JudgeService {
 
     private final ContestParticipantRepository contestParticipantRepository;
@@ -213,12 +216,10 @@ public class JudgeService {
         }
     }
 
-    public AttemptDto runOpenTests(UUID contestParticipantId, TaskCheckRequest request) {
+    public AttemptEntity runOpenTests(UUID contestParticipantId, TaskCheckRequest request) {
 
         var contestParticipant = contestParticipantRepository.findById(contestParticipantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
-
-        // TODO: add check for contest status
 
         var task = taskRepository.findById(request.getTaskId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
@@ -244,15 +245,24 @@ public class JudgeService {
         );
     }
 
-//    public TaskCheckResponse runAllTests(TaskCheckRequest request) {
-//
-//        var contestParticipant = contestParticipantRepository.findById(request.getParticipantId())
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found"));
-//        var task = taskRepository.findById(request.getTaskId())
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
-//
-//        var tests = testService.getTestsByTask(task.getId());
-//
-//        return new TaskCheckResponse();
-//    }
+    public AttemptEntity runAllTests(ContestParticipantEntity participant, TaskEntity task, Solution solution) {
+
+        var testResults = runTests(
+                participant.getLogin(),
+                solution.language(),
+                task.getMemoryLimit(),
+                task.getTimeLimit(),
+                solution.text(),
+                testMapper.toTCList(task.getTests())
+        );
+
+        return attemptService.addAttempt(
+                participant,
+                task,
+                solution.language(),
+                solution.text(),
+                task.getTests(),
+                testResults
+        );
+    }
 }
