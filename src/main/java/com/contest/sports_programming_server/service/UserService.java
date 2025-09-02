@@ -4,6 +4,7 @@ import com.contest.sports_programming_server.dto.ContestParticipantShortDto;
 import com.contest.sports_programming_server.dto.response.LoginResponse;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
+import com.contest.sports_programming_server.security.ContestParticipant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,16 +33,20 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public LoginResponse login(String login, String password) {
+
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        ContestParticipantEntity participant = contestParticipantRepository.findByLogin(login)
-                .orElseThrow();
-        String token = jwtService.generateToken(participant);
-        return LoginResponse.builder()
-                .user(new ContestParticipantShortDto(participant))
-                .token(token)
-                .build();
-    }
 
+        if(authentication.getPrincipal() instanceof ContestParticipant principal) {
+            String token = jwtService.generateToken(principal.getUsername());
+            return LoginResponse.builder()
+                    .user(new ContestParticipantShortDto(principal))
+                    .token(token)
+                    .build();
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+    }
 }

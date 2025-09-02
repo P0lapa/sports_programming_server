@@ -38,12 +38,9 @@ public class JwtService {
         return extractClaimBody(token, Claims::getExpiration);
     }
 
-    public String generateToken(ContestParticipantEntity contestParticipantEntity) {
-        String username = contestParticipantEntity.getLogin();
+    public String generateToken(String username) {
 
-        Map<String, Object> claims = new HashMap<>();
-
-        return createToken(claims, username);
+        return createToken(new HashMap<>(), username);
     }
 
     public String createToken(Map<String, Object> claims, String subject) {
