@@ -1,4 +1,5 @@
 package com.contest.sports_programming_server.security;
+import com.contest.sports_programming_server.config.SecureProperties;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import com.contest.sports_programming_server.service.ContestParticipantDetailsService;
@@ -22,6 +23,8 @@ public class ContestParticipantAuthenticationProvider implements AuthenticationP
     private final ContestParticipantDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
+    private final SecureProperties secureProperties;
+
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
@@ -32,17 +35,18 @@ public class ContestParticipantAuthenticationProvider implements AuthenticationP
 
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        ContestParticipantEntity participant = contestParticipantRepository.findByLogin(username)
-                .orElseThrow(() -> new BadCredentialsException("Invalid username"));
-        if(!passwordEncoder.matches(password, participant.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
-        }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            throw new BadCredentialsException("Invalid username or password");
+        }
+
         return UsernamePasswordAuthenticationToken.authenticated(
                 userDetails,
                 null,
                 userDetails.getAuthorities()
         );
     }
+
 }

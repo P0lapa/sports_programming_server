@@ -13,6 +13,9 @@ jwt:
   secret-key: ${JWT_SECRET}
   validity: ${JWT_VALIDITY}
 
+secure:
+  username: ${ADMIN_USERNAME}
+  password: ${ADMIN_PASSWORD}
 
 springdoc:
   swagger-ui:

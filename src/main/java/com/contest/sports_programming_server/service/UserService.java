@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +25,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j(topic = "ContestLogger")
 public class UserService {
 
     private final ContestParticipantRepository contestParticipantRepository;
@@ -34,9 +36,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public LoginResponse login(String login, String password) {
 
+        log.debug("Attempting to login user {} with password {}", login, password);
+
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        log.debug("Authentication successful");
 
         if(authentication.getPrincipal() instanceof ContestParticipant principal) {
             String token = jwtService.generateToken(principal.getUsername());
@@ -44,8 +50,14 @@ public class UserService {
                     .user(new ContestParticipantShortDto(principal))
                     .token(token)
                     .build();
+        } else if(authentication.getPrincipal() instanceof User user) {
+            String token = jwtService.generateToken(user.getUsername());
+            return LoginResponse.builder()
+                    .user(new ContestParticipantShortDto(null, null))
+                    .token(token)
+                    .build();
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+            throw new BadCredentialsException("Invalid username or password");
         }
 
     }
