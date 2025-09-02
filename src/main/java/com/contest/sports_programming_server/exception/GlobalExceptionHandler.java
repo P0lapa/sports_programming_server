@@ -2,6 +2,7 @@ package com.contest.sports_programming_server.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,6 +27,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ParticipationFinishedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> handleContestNotStarted(ParticipationFinishedException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> handleAuthenticationException(AuthenticationException ex) {
         return Map.of("error", ex.getMessage());
     }
 

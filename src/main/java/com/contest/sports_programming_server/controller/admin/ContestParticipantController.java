@@ -29,7 +29,8 @@ public class ContestParticipantController {
     @PostMapping("/add/{participantId}")
     public ResponseEntity<NewContestParticipantDto> joinContest(
             @PathVariable("id") UUID contestId,
-            @PathVariable UUID participantId) {
+            @PathVariable UUID participantId
+    ) {
         var dto = contestParticipantService.createContestParticipant(contestId, participantId);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
@@ -37,11 +38,20 @@ public class ContestParticipantController {
     @PostMapping("/")
     public ResponseEntity<NewContestParticipantDto> createAndJoin(
             @PathVariable("id") UUID contestId,
-            @RequestBody CreateParticipantRequest request) {
+            @RequestBody CreateParticipantRequest request
+    ) {
         var dto = contestParticipantService.createParticipantAndJoinContest(contestId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
+    @PostMapping("/{contestParticipantId}/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @PathVariable("id") UUID contestId,
+            @PathVariable("contestParticipantId") UUID participantId
+    ) {
+        String password = contestParticipantService.setNewPassword(participantId);
+        return ResponseEntity.status(HttpStatus.OK).body(password);
+    }
 
 
 }

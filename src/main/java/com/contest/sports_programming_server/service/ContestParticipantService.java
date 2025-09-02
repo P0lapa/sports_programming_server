@@ -8,7 +8,6 @@ import com.contest.sports_programming_server.mapper.ContestParticipantMapper;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -81,6 +80,16 @@ public class ContestParticipantService {
         entity.setFinishedAt(LocalDateTime.now());
         repository.save(entity);
         log.info("Finished contest for participant {} login {}", entity.getId(), entity.getLogin());
+    }
+
+    @Transactional
+    public String setNewPassword(UUID contestParticipantId) {
+        var entity = repository.findById(contestParticipantId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        String password = generatePassword();
+        entity.setPassword(passwordEncoder.encode(password));
+        repository.save(entity);
+        return password;
     }
 
     private static String generateLogin() {
