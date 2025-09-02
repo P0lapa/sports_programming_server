@@ -1,5 +1,6 @@
 package com.contest.sports_programming_server.service;
 
+import com.contest.sports_programming_server.dto.ContestParticipantShortDto;
 import com.contest.sports_programming_server.dto.response.LoginResponse;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
@@ -37,7 +38,10 @@ public class UserService {
         ContestParticipantEntity participant = contestParticipantRepository.findByLogin(login)
                 .orElseThrow();
         String token = jwtService.generateToken(participant);
-        return new LoginResponse(participant.getLogin(), participant.getId(), token);
+        return LoginResponse.builder()
+                .user(new ContestParticipantShortDto(participant))
+                .token(token)
+                .build();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.contest.sports_programming_server.controller;
 
 import com.contest.sports_programming_server.dto.AttemptDto;
+import com.contest.sports_programming_server.dto.ContestParticipantShortDto;
 import com.contest.sports_programming_server.dto.TaskCheckRequest;
 import com.contest.sports_programming_server.dto.TaskDto;
 import com.contest.sports_programming_server.security.ContestParticipant;
@@ -45,5 +46,10 @@ public class ContestParticipantApiController {
     public ResponseEntity<Void> finishContest(@AuthenticationPrincipal ContestParticipant principal) {
         contestParticipantApiService.finishContest(principal);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ContestParticipantShortDto> getProfile(@AuthenticationPrincipal ContestParticipant principal) {
+        return ResponseEntity.ok(contestParticipantApiService.getProfile(principal));
     }
 }

@@ -1,6 +1,7 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.AttemptDto;
+import com.contest.sports_programming_server.dto.ContestParticipantShortDto;
 import com.contest.sports_programming_server.dto.TaskCheckRequest;
 import com.contest.sports_programming_server.dto.TaskDto;
 import com.contest.sports_programming_server.mapper.AttemptMapper;
@@ -29,6 +30,10 @@ public class ContestParticipantApiService {
 
     public void finishContest(ContestParticipant principal) {
         contestParticipantService.finishContestForParticipant(principal.getId());
+    }
+
+    public ContestParticipantShortDto getProfile(ContestParticipant principal) {
+        return new ContestParticipantShortDto(principal);
     }
 
 }
