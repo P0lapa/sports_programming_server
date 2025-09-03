@@ -3,6 +3,7 @@ package com.contest.sports_programming_server.controller.admin;
 import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.dto.request.CreateContestRequest;
 import com.contest.sports_programming_server.dto.request.UpdateContestRequest;
+import com.contest.sports_programming_server.dto.request.UpdateContestStatusRequest;
 import com.contest.sports_programming_server.service.ContestResultsService;
 import com.contest.sports_programming_server.service.ContestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -68,11 +69,11 @@ public class ContestController {
         return ResponseEntity.ok(contestResultsService.getContestResults(contestId));
     }
 
-    @PostMapping("/{contest_id}/set-status/{status}")
+    @PatchMapping("/{contest_id}/status")
     public ResponseEntity<Void> setContestStatus(
             @PathVariable("contest_id") UUID contestId,
-            @PathVariable("status") ContestStatus status) {
-        contestService.setContestStatus(contestId, status);
+            @RequestBody @Valid UpdateContestStatusRequest req) {
+        contestService.setContestStatus(contestId, req.getContestStatus());
         return ResponseEntity.noContent().build();
     }
 }
