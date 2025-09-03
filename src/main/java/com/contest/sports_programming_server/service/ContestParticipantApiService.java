@@ -1,6 +1,7 @@
 package com.contest.sports_programming_server.service;
 
 import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.dto.response.GetContestInfoResponse;
 import com.contest.sports_programming_server.mapper.AttemptMapper;
 import com.contest.sports_programming_server.security.ContestParticipant;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class ContestParticipantApiService {
     private final JudgeService judgeService;
     private final ContestParticipantService contestParticipantService;
     private final AttemptService attemptService;
+    private final ContestService contestService;
 
     @Transactional
     public List<TaskDto> getTasks(ContestParticipant principal) {
@@ -48,6 +50,10 @@ public class ContestParticipantApiService {
                 .task(taskDto)
                 .attempts(attempts)
                 .build();
+    }
+
+    public GetContestInfoResponse getContestInfo(ContestParticipant principal) {
+        return contestService.getContestInfo(principal.getContestId());
     }
 
 }

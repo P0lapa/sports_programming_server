@@ -3,6 +3,7 @@ package com.contest.sports_programming_server.service;
 import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.dto.request.CreateContestRequest;
 import com.contest.sports_programming_server.dto.request.UpdateContestRequest;
+import com.contest.sports_programming_server.dto.response.GetContestInfoResponse;
 import com.contest.sports_programming_server.entity.ContestEntity;
 import com.contest.sports_programming_server.mapper.ContestMapper;
 import com.contest.sports_programming_server.repository.*;
@@ -79,5 +80,11 @@ public class ContestService {
         contestRepository.save(contest);
         log.debug("Contest {} status updated to {}", contest.getId(), contest.getContestStatus());
     }
+
+    public GetContestInfoResponse getContestInfo(UUID contestId) {
+        ContestEntity contest = getContestOrThrow(contestId);
+        return new GetContestInfoResponse(contest.getName(), contest.getDescription());
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.contest.sports_programming_server.controller;
 
 import com.contest.sports_programming_server.dto.*;
+import com.contest.sports_programming_server.dto.response.GetContestInfoResponse;
 import com.contest.sports_programming_server.security.ContestParticipant;
 import com.contest.sports_programming_server.service.ContestParticipantApiService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,4 +59,10 @@ public class ContestParticipantApiController {
     public ResponseEntity<ContestParticipantShortDto> getProfile(@AuthenticationPrincipal ContestParticipant principal) {
         return ResponseEntity.ok(contestParticipantApiService.getProfile(principal));
     }
+
+    @GetMapping("/contest")
+    public ResponseEntity<GetContestInfoResponse> getContestInfo(@AuthenticationPrincipal ContestParticipant principal) {
+        return ResponseEntity.ok(contestParticipantApiService.getContestInfo(principal));
+    }
+
 }
