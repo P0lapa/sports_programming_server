@@ -60,7 +60,7 @@ public class ContestParticipantApiController {
         return ResponseEntity.ok(contestParticipantApiService.getProfile(principal));
     }
 
-    @GetMapping("/contest")
+    @GetMapping("/")
     public ResponseEntity<GetContestInfoResponse> getContestInfo(@AuthenticationPrincipal ContestParticipant principal) {
         return ResponseEntity.ok(contestParticipantApiService.getContestInfo(principal));
     }
