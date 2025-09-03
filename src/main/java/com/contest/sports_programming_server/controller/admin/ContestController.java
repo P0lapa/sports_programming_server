@@ -74,6 +74,6 @@ public class ContestController {
             @PathVariable("contest_id") UUID contestId,
             @RequestBody @Valid UpdateContestStatusRequest req) {
         contestService.setContestStatus(contestId, req.getContestStatus());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
