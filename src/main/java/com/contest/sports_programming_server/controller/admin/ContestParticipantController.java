@@ -37,6 +37,7 @@ public class ContestParticipantController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
+    //ToDo: Перенести в ParticipantController, заменив тот метод, который сейчас создаёт Participant
     @PostMapping("/")
     public ResponseEntity<NewContestParticipantDto> createAndJoin(
             @PathVariable("contest_id") UUID contestId,
@@ -46,7 +47,8 @@ public class ContestParticipantController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @PostMapping("/{contest_participant_id}/reset-password")
+    //ToDo: Перенести в ParticipantController
+    @PutMapping("/{contest_participant_id}/reset-password")
     public ResponseEntity<String> resetPassword(
             @PathVariable("contest_id") UUID contestId,
             @PathVariable("contest_participant_id") UUID participantId

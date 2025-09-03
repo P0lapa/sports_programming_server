@@ -43,12 +43,14 @@ public class ContestParticipantService {
         return mapper.toDTOList(findByContestId(contestId));
     }
 
+    //ToDo: Перенести в ParticipantService. В чём отличия от createContestParticipant?
     @Transactional
     public NewContestParticipantDto createParticipantAndJoinContest(UUID contestId, CreateParticipantRequest request) {
         var participant = participantService.create(request);
         return createContestParticipant(contestId, participant.id());
     }
 
+    //ToDo: Перенести в ParticipantService. В чём отличия от createParticipantAndJoinContest?
     @Transactional
     public NewContestParticipantDto createContestParticipant(UUID contestId, UUID participantId) {
         var contest = contestService.getContestOrThrow(contestId);
@@ -82,6 +84,7 @@ public class ContestParticipantService {
         log.info("Finished contest for participant {} login {}", entity.getId(), entity.getLogin());
     }
 
+    //ToDo: Перенести в ParticipantService
     @Transactional
     public String setNewPassword(UUID contestParticipantId) {
         var entity = repository.findById(contestParticipantId)
@@ -92,10 +95,12 @@ public class ContestParticipantService {
         return password;
     }
 
+    //ToDo: Перенести в ParticipantService
     private static String generateLogin() {
         return "u-" + HexFormat.of().withUpperCase().formatHex(randomBytes(4));
     }
 
+    //ToDo: Перенести в ParticipantService
     private static String generatePassword() {
         final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         var sb = new StringBuilder(12);
@@ -103,6 +108,7 @@ public class ContestParticipantService {
         return sb.toString();
     }
 
+    //ToDo: Перенести в ParticipantService
     private static byte[] randomBytes(int n) {
         var b = new byte[n];
         RNG.nextBytes(b);
