@@ -42,7 +42,7 @@ public class UserService {
                     .token(token)
                     .build();
         } else {
-            throw new BadCredentialsException("Invalid username or password");
+            throw new BadCredentialsException("Неверное имя или пароль");
         }
 
     }

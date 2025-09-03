@@ -36,7 +36,7 @@ public class ContestParticipantAuthenticationProvider implements AuthenticationP
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new BadCredentialsException("Invalid username or password");
+            throw new BadCredentialsException("Неверное имя или пароль");
         }
 
         return UsernamePasswordAuthenticationToken.authenticated(
