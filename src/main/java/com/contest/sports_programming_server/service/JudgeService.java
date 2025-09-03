@@ -13,10 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +35,8 @@ public class JudgeService {
 
     private static final Map<Language, String> LANGUAGE_IMAGES = Map.of(
             Language.JAVA, "openjdk:21-jdk",
-            Language.CPP, "gcc:14",
-            Language.C, "gcc:14",
+            Language.CPP, "gcc-time:14",
+            Language.C, "gcc-time:14",
             Language.PYTHON, "python:3.12"
     );
 
@@ -49,6 +53,11 @@ public class JudgeService {
 
     private String getExtension(Language lang) {
         return LANGUAGE_EXTENSIONS.get(lang);
+    }
+
+    private static class ParseResult {
+        double timeSeconds = 0.0;
+        long memoryBytes = 0L;
     }
 
     public List<TestResult> runTests(
@@ -82,6 +91,7 @@ public class JudgeService {
             // 4. Создаём переиспользуемые файлы input/output
             Path inputFile = tmpDir.resolve("test.in");
             Path outputFile = tmpDir.resolve("test.out");
+            Path statsFile = tmpDir.resolve("test.stats");
 
             // 4. Прогон тестов
             for (TestCase tc : tests) {
@@ -101,6 +111,9 @@ public class JudgeService {
                     default -> throw new IllegalArgumentException("Unsupported language");
                 }
 
+                String innerCmd = "/usr/bin/time -v timeout " + timeLimit + "s " + runCmd +
+                        " < test.in > test.out 2> test.stats";
+
                 // 4.3 Запуск
                 ProcessBuilder pb = new ProcessBuilder(
                         "docker", "run", "--rm",
@@ -109,17 +122,21 @@ public class JudgeService {
                         "-v", tmpDir.toAbsolutePath() + ":/app",
                         "-w", "/app",
                         image,
-                        "sh", "-c", "timeout " + timeLimit + "s " + runCmd + " < test.in > test.out"
+                        "sh", "-c", innerCmd
                 );
+
                 pb.directory(tmpDir.toFile());
                 Process p = pb.start();
-                long start = System.nanoTime();
+
                 int exitCode = p.waitFor();
-                long end = System.nanoTime();
+
 
                 // 4.4 Читаем вывод и результат
                 String output = Files.exists(outputFile) ? Files.readString(outputFile) : "";
-                res.setTimeSeconds((end - start) / 1_000_000_000.0 - 0.5);
+
+                ParseResult parseResult = parseStatsFile(statsFile);
+                res.setTimeSeconds(parseResult.timeSeconds);
+                res.setMemoryBytes(parseResult.memoryBytes);
 
                 if (exitCode == 124) {
                     res.setPassed(false);
@@ -146,10 +163,7 @@ public class JudgeService {
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            TestResult err = new TestResult();
-            err.setPassed(false);
-            err.setReason("SERVER_ERROR");
-            results.add(err);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
         return results;
@@ -191,6 +205,52 @@ public class JudgeService {
         }
 
         return exitCode;
+    }
+
+    private static ParseResult parseStatsFile(Path statsFile) {
+        ParseResult result = new ParseResult();
+        if (!Files.exists(statsFile)) {
+            return result;  // если файла нет
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(statsFile.toFile()))) {
+            String line;
+            Pattern elapsedPattern = Pattern.compile("Elapsed \\(wall clock\\) time \\(h:mm:ss or m:ss\\): (.+)");
+            Pattern memoryPattern = Pattern.compile("Maximum resident set size \\(kbytes\\): (\\d+)");
+
+            while ((line = br.readLine()) != null) {
+                Matcher elapsedMatcher = elapsedPattern.matcher(line);
+                if (elapsedMatcher.find()) {
+                    String value = elapsedMatcher.group(1).trim();
+                    result.timeSeconds = parseElapsedTime(value);
+                }
+                Matcher memoryMatcher = memoryPattern.matcher(line);
+                if (memoryMatcher.find()) {
+                    long kb = Long.parseLong(memoryMatcher.group(1));
+                    result.memoryBytes = kb * 1024;
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return result;
+    }
+
+    private static double parseElapsedTime(String value) {
+        String[] parts = value.split(":");
+        double seconds = 0.0;
+        if (parts.length == 3) { // h:mm:ss
+            seconds += Integer.parseInt(parts[0]) * 3600;
+            seconds += Integer.parseInt(parts[1]) * 60;
+            seconds += Double.parseDouble(parts[2]);
+        } else if (parts.length == 2) { // m:ss
+            seconds += Integer.parseInt(parts[0]) * 60;
+            seconds += Double.parseDouble(parts[1]);
+        } else {
+            seconds = Double.parseDouble(parts[0]);
+        }
+        return seconds;
     }
 
     private void safeDeleteDirectory(Path dir) {
