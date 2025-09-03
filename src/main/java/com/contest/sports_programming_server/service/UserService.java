@@ -38,7 +38,7 @@ public class UserService {
         } else if(authentication.getPrincipal() instanceof User user) {
             String token = jwtService.generateToken(user.getUsername());
             return LoginResponse.builder()
-                    .user(new ContestParticipantShortDto(null, null))
+                    .user(new ContestParticipantShortDto("Admin", null))
                     .token(token)
                     .build();
         } else {

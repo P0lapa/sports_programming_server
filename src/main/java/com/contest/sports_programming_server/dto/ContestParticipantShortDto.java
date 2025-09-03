@@ -6,16 +6,16 @@ import com.contest.sports_programming_server.security.ContestParticipant;
 import java.util.UUID;
 
 public record ContestParticipantShortDto(
-        UUID id,
+        String role,
         String login
 ) {
 
-    public ContestParticipantShortDto(ContestParticipantEntity entity){
+    /*public ContestParticipantShortDto(ContestParticipantEntity entity){
         this(entity.getId(), entity.getLogin());
-    }
+    }*/
 
     public ContestParticipantShortDto(ContestParticipant principal){
-        this(principal.getId(), principal.getUsername());
+        this("Participant", principal.getUsername());
     }
 
 }
