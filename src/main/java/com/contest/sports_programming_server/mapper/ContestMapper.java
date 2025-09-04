@@ -21,9 +21,12 @@ public interface ContestMapper {
 
     List<ContestDetailsDto> toDtoList(List<ContestEntity> entities);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "tasks", ignore = true)
+    @Mapping(target = "participants", ignore = true)
     ContestEntity toEntity(CreateContestRequest request);
 
     @Mapping(target = "tasks", ignore = true)
+    @Mapping(target = "participants", ignore = true)
     void updateEntityFromDto(UpdateContestRequest request, @MappingTarget ContestEntity entity);
 }
