@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AttemptRepository extends JpaRepository<AttemptEntity, UUID> {
-    List<AttemptEntity> findAllByParticipant_IdAndTask_Id(UUID participantId, UUID taskId);
+    List<AttemptEntity> findAllByParticipant_IdAndTask_IdOrderByAttemptNumberDesc(UUID participantId, UUID taskId);
     Integer countByParticipant_IdAndTask_Id(UUID participantId, UUID taskId);
     List<AttemptEntity> findByParticipant_IdAndTask_Contest_Id(UUID participantId, UUID contestId);
 

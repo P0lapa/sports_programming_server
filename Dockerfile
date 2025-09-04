@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/
 WORKDIR /app
 
 # Копируем JAR-файл в контейнер
-COPY target/sports-programming-server-aplha-1.0.3.jar app.jar
+COPY target/sports-programming-server-aplha-1.0.4.jar app.jar
 
 # Указываем порт (по умолчанию 8080 для Spring Boot)
 EXPOSE 8080

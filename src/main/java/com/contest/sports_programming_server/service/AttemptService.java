@@ -69,7 +69,7 @@ public class AttemptService {
     }
 
     public List<AttemptEntity> getAttempts(UUID participantId, UUID taskId) {
-        return attemptRepository.findAllByParticipant_IdAndTask_Id(participantId, taskId);
+        return attemptRepository.findAllByParticipant_IdAndTask_IdOrderByAttemptNumberDesc(participantId, taskId);
     }
 
 }

@@ -74,11 +74,15 @@ public class JudgeService {
 
         try {
             // 1. Создаем временную директорию для этого запуска
-            Path tmpDir = Files.createTempDirectory(Paths.get("/judge"), "judge_" + userNumber + "_");
+            Path tmpDir = Files.createTempDirectory("judge_" + userNumber + "_");
+            log.debug("Created directory {}", tmpDir.toAbsolutePath());
+
 
             // 2. Файл с решением
             String ext = getExtension(language);
             Path solutionFile = tmpDir.resolve("solution." + ext);
+            log.debug("Created solution file {}", solutionFile.toAbsolutePath());
+
             Files.writeString(solutionFile, solution);
 
             // 3. Компиляция (если нужно)
@@ -87,9 +91,11 @@ public class JudgeService {
                 if (compileCode != 0) {
                     return results;
                 }
+                log.debug("Compilation completed");
             }
 
             // 4. Создаём переиспользуемые файлы input/output
+            log.debug("Service files creation");
             Path inputFile = tmpDir.resolve("test.in");
             Path outputFile = tmpDir.resolve("test.out");
             Path statsFile = tmpDir.resolve("test.stats");
@@ -131,7 +137,6 @@ public class JudgeService {
 
                 int exitCode = p.waitFor();
 
-
                 // 4.4 Читаем вывод и результат
                 String output = Files.exists(outputFile) ? Files.readString(outputFile) : "";
 
@@ -141,19 +146,19 @@ public class JudgeService {
 
                 if (exitCode == 124) {
                     res.setPassed(false);
-                    res.setReason("TLE");
+                    res.setReason("Превышение ограничения по времени");
                 } else if (exitCode == 137) {
                     res.setPassed(false);
-                    res.setReason("MLE");
+                    res.setReason("Превышение ограничения по памяти");
                 } else if (exitCode != 0) {
                     res.setPassed(false);
-                    res.setReason("RTE");
+                    res.setReason("Ошибка в ходе исполнения");
                 } else if (output.trim().equals(tc.getExpected().trim())) {
                     res.setPassed(true);
-                    res.setReason("OK");
+                    res.setReason("Верно");
                 } else {
                     res.setPassed(false);
-                    res.setReason("WA");
+                    res.setReason("Неверный результат");
                 }
 
                 results.add(res);
@@ -201,7 +206,7 @@ public class JudgeService {
         if (exitCode != 0) {
             TestResult compileError = new TestResult();
             compileError.setPassed(false);
-            compileError.setReason("CE: " + output.trim());
+            compileError.setReason("Ошибка компиляции");
             results.add(compileError);
         }
 
