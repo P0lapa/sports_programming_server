@@ -83,7 +83,8 @@ public class ContestService {
 
     public GetContestInfoResponse getContestInfo(UUID contestId) {
         ContestEntity contest = getContestOrThrow(contestId);
-        return new GetContestInfoResponse(contest.getName(), contest.getDescription());
+        return new GetContestInfoResponse(contest.getName(), contest.getDescription(), contest.getStartDateTime(),
+                contest.getEndDateTime());
     }
 
 
