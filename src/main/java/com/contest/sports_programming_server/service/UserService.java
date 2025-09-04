@@ -25,9 +25,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public LoginResponse login(String login, String password) {
 
+        log.debug("{} tries to login", login);
+
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        log.debug("{} logged in", login);
 
         if(authentication.getPrincipal() instanceof ContestParticipant principal) {
             String token = jwtService.generateToken(principal.getUsername());

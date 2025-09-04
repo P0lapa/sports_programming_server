@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.contest</groupId>
 	<artifactId>sports-programming-server</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>aplha-1.0</version>
 	<name>sports-programming-server</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
