@@ -4,7 +4,6 @@ import com.contest.sports_programming_server.dto.*;
 import com.contest.sports_programming_server.entity.AttemptEntity;
 import com.contest.sports_programming_server.entity.ContestParticipantEntity;
 import com.contest.sports_programming_server.entity.TaskEntity;
-import com.contest.sports_programming_server.exception.UnsupportedLanguageException;
 import com.contest.sports_programming_server.mapper.TestMapper;
 import com.contest.sports_programming_server.repository.ContestParticipantRepository;
 import com.contest.sports_programming_server.repository.TaskRepository;
@@ -33,7 +32,6 @@ public class JudgeService {
     private final TestService testService;
     private final TestMapper testMapper;
     private final AttemptService attemptService;
-    private final CppJudgeModule cppJudgeModule;
 
     private static final Map<Language, String> LANGUAGE_IMAGES = Map.of(
             Language.JAVA, "openjdk:21-jdk",
@@ -287,26 +285,14 @@ public class JudgeService {
 
         var tests = testService.getPublicTestsByTask(task.getId());
 
-        if(request.getLanguage() != Language.CPP) {
-            throw new UnsupportedLanguageException();
-        }
-
-        var testResults = cppJudgeModule.runTestsC(
+        var testResults = runTests(
                 contestParticipant.getLogin(),
+                request.getLanguage(),
                 task.getMemoryLimit(),
                 task.getTimeLimit(),
                 request.getSolution(),
                 testMapper.toTCList(tests)
         );
-
-//        var testResults = runTests(
-//                contestParticipant.getLogin(),
-//                request.getLanguage(),
-//                task.getMemoryLimit(),
-//                task.getTimeLimit(),
-//                request.getSolution(),
-//                testMapper.toTCList(tests)
-//        );
 
         return attemptService.addAttempt(
                 contestParticipant,
