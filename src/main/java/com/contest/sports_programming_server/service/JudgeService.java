@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +74,7 @@ public class JudgeService {
 
         try {
             // 1. Создаем временную директорию для этого запуска
-            Path tmpDir = Files.createTempDirectory("judge_" + userNumber + "_");
+            Path tmpDir = Files.createTempDirectory(Paths.get("/judge"), "judge_" + userNumber + "_");
 
             // 2. Файл с решением
             String ext = getExtension(language);
