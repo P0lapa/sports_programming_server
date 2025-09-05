@@ -22,7 +22,7 @@ public class ContestParticipantApiService {
     private final AttemptService attemptService;
     private final ContestService contestService;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TaskDto> getTasks(ContestParticipant principal) {
         return taskService.getTasksForParticipant(principal.getContestId(), principal.getId());
     }

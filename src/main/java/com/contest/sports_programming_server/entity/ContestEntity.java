@@ -27,8 +27,7 @@ public class ContestEntity {
 
     private String name;
 
-    @Lob
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;

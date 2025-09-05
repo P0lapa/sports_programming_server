@@ -27,8 +27,7 @@ public class TaskEntity {
     private UUID id;
     private String name;
 
-    @Lob
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
     private Integer timeLimit;
     private Integer memoryLimit;

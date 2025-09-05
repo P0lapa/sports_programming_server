@@ -50,8 +50,7 @@ public class AttemptEntity {
     @Column(nullable = false, length = 10)
     private Language language;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String solution;
 
     @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
