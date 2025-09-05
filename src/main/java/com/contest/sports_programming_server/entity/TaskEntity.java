@@ -26,6 +26,9 @@ public class TaskEntity {
     @GeneratedValue
     private UUID id;
     private String name;
+
+    @Lob
+    @Column
     private String description;
     private Integer timeLimit;
     private Integer memoryLimit;

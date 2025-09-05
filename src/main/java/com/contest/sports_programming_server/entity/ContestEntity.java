@@ -24,7 +24,11 @@ public class ContestEntity {
     @Id
     @GeneratedValue
     private UUID id;
+
     private String name;
+
+    @Lob
+    @Column
     private String description;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
